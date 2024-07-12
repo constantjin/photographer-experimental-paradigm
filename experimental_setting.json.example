@@ -1,0 +1,64 @@
+{
+    "googleMapsAPIKey": "",
+    "clipTextModelPath": "./models/clip-text-vit-32-float32-int32.onnx",
+    "clipImageModelPath": "./models/clip-image-vit-32-float32.onnx",
+    "experimentalDataStorePath": "./data",
+    "runInfo": [
+        {
+            "city": "Boston",
+            "latlng": {
+                "lat": 42.359730801517095,
+                "lng": -71.05978092045854
+            },
+            "captionTarget": "A person on the bicycle is waiting for the traffic light."
+        },
+        {
+            "city": "New York",
+            "latlng": {
+                "lat": 40.712870223889766,
+                "lng": -74.00740228793312
+            },
+            "captionTarget": "A person on the bicycle is waiting for the traffic light."
+        },
+        {
+            "city": "Los Angeles",
+            "latlng": {
+                "lat": 34.052298818382134,
+                "lng": -118.24346284307808
+            },
+            "captionTarget": "A person on the bicycle is waiting for the traffic light."
+        },
+        {
+            "city": "London",
+            "latlng": {
+                "lat": 51.50753450035801,
+                "lng": -0.12842994682867678
+            },
+            "captionTarget": "A person on the bicycle is waiting for the traffic light."
+        },
+        {
+            "city": "Paris",
+            "latlng": {
+                "lat": 48.85719089933347,
+                "lng":  2.352774577891171
+            },
+            "captionTarget": "A person on the bicycle is waiting for the traffic light."
+        }
+    ],
+    "azureAPIUrl": "",
+    "azureAPIKey": "",
+    "googleTTSAPIKey": "",
+    "trialInfo": {
+        "captureIntervalInMs": 40000,
+        "totalNumberOfTrials": 8,
+        "fixationDurationInMs": 5000,
+        "fixationJitterRatio": 0.2,
+        "capturePreviewDurationInMs": 2000,
+        "multimodalDurationInMs": 3000,
+        "speakingRate": 1.2,
+        "propabilityOfCaptionText": 0.5,
+        "rewardDurationInMs": 2000,
+        "minSimilarityThreshold": 0.18,
+        "maxSimilarityThreshold": 0.28
+    }
+}
