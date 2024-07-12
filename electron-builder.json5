@@ -1,0 +1,38 @@
+/**
+ * @see https://www.electron.build/configuration/configuration
+ */
+{
+  appId: "com.bspl.photographer_paradigm",
+  productName: "Photographer Experimental Paradigm",
+  copyright: "Copyright © 2022-2024 ${author}",
+  asar: true,
+  directories: {
+    output: "release/${version}",
+    buildResources: "electron/resources",
+  },
+  files: ["dist"],
+  win: {
+    target: [
+      {
+        target: "zip",
+        arch: ["x64"],
+      },
+    ],
+    // artifactName: "${productName}-Windows-${version}-Setup.${ext}",
+  },
+  // nsis: {
+  //   oneClick: false,
+  //   perMachine: false,
+  //   allowToChangeInstallationDirectory: true,
+  //   deleteAppDataOnUninstall: false,
+  // },
+  mac: {
+    target: ["zip"],
+    // artifactName: "${productName}-Mac-${version}-Installer.${ext}",
+  },
+  linux: {
+    icon: "electron/resources/iconset",
+    target: ["zip"],
+    // artifactName: "${productName}-Linux-${version}.${ext}",
+  },
+}
