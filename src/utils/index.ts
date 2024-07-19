@@ -8,7 +8,7 @@ export function jitter(baseInMs: number, ratio: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
- // Reference: https://github.com/josephrocca/openai-clip-js/commits/main/onnx-image-demo.html
+// Reference: https://github.com/josephrocca/openai-clip-js/commits/main/onnx-image-demo.html
 export async function noramlizeImageBuffer(inputBuffer: Uint8Array) {
   const blobFromBuffer = new Blob([inputBuffer], { type: "image/png" });
   const img = await createImageBitmap(blobFromBuffer);
@@ -43,7 +43,7 @@ export async function noramlizeImageBuffer(inputBuffer: Uint8Array) {
 }
 
 const dot = (a: Float32Array, b: Float32Array) =>
-    a.map((x, i) => a[i] * b[i]).reduce((m, n) => m + n);
+  a.map((x, i) => a[i] * b[i]).reduce((m, n) => m + n);
 
 export const cosineSimilarity = (a: Float32Array, b: Float32Array) => {
   const norm = (x: Float32Array) => {

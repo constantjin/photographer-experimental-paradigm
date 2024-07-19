@@ -21,11 +21,11 @@ export function Instruction() {
       const etimeResponse = await window.api.invoke(
         "write-etime",
         dataDirPaths.participantRunDataDirPath,
-        "instruction"
+        "instruction",
       );
       reportAPIResponse(etimeResponse);
       const endTime = performance.now();
-  
+
       const etimeDelay = endTime - startTime;
       if (etimeDelay < instructionDurationInMs) {
         await delay(instructionDurationInMs - etimeDelay);

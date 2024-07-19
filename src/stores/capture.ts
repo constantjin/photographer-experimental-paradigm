@@ -4,7 +4,6 @@ export const captureTimerEnabledAtom = atom(false);
 
 export const capturedVisibleAtom = atom(false);
 
-
 // New
 
 export const captureIntervalEnableAtom = atom(false);

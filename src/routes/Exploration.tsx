@@ -63,7 +63,7 @@ export function Exploration() {
   const captureStreetViewScene = useCallback(async () => {
     if (!mapDivRef) {
       console.error(
-        "[PanoramaControl:captureStreetViewScene] Undefined mapDivRef."
+        "[PanoramaControl:captureStreetViewScene] Undefined mapDivRef.",
       );
       return;
     }
@@ -106,7 +106,7 @@ export function Exploration() {
       const etimeResponse = await window.api.invoke(
         "write-etime",
         dataDirPaths.participantRunDataDirPath,
-        "capture_failed"
+        "capture_failed",
       );
       reportAPIResponse(etimeResponse);
       await captureStreetViewScene();

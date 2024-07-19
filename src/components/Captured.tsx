@@ -38,7 +38,7 @@ export function Captured() {
 
     const jitteredFixationCaptureDurationInMs = jitter(
       fixationCaptureDurationInMs,
-      jitterRatio
+      jitterRatio,
     );
     await delay(jitteredFixationCaptureDurationInMs);
 
@@ -48,13 +48,21 @@ export function Captured() {
     const etimeResponse = await window.api.invoke(
       "write-etime",
       dataDirPaths.participantRunDataDirPath,
-      `trial_${newTrialNumber}`
+      `trial_${newTrialNumber}`,
     );
     reportAPIResponse(etimeResponse);
 
     // Set the Captured component invisible
     setCapturedVisible(false);
-  }, [currentTrialNumber, dataDirPaths.participantRunDataDirPath, setCaptureTimerEnabled, setCapturedVisible, setControllerAction, setControllerEnabled, setCurrentTrialNumber]);
+  }, [
+    currentTrialNumber,
+    dataDirPaths.participantRunDataDirPath,
+    setCaptureTimerEnabled,
+    setCapturedVisible,
+    setControllerAction,
+    setControllerEnabled,
+    setCurrentTrialNumber,
+  ]);
 
   useEffect(() => {
     initCaptured();

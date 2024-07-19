@@ -1,0 +1,12 @@
+# Project files
+dist
+release
+public
+*.md
+*.json5
+.example
+index.html
+
+# Codes from other repos
+electron/shared/clip_bpe
+src/utils/awesome-react-gamepads

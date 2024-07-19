@@ -12,8 +12,8 @@ export const controllerStateAtom = atom<IControllerState>({
 });
 
 export const controllerEnabledAtom = focusAtom(controllerStateAtom, (optic) =>
-  optic.prop("enabled")
+  optic.prop("enabled"),
 );
 export const controllerActionAtom = focusAtom(controllerStateAtom, (optic) =>
-  optic.prop("action")
+  optic.prop("action"),
 );

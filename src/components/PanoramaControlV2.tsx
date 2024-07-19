@@ -55,7 +55,7 @@ export function PanoramaControlV2() {
         actionFunction();
       }, interval);
     },
-    []
+    [],
   );
 
   const resetActionInterval = () => {
@@ -97,7 +97,7 @@ export function PanoramaControlV2() {
     const actionResponse = await window.api.invoke(
       "street:write-action",
       dataDirPaths.participantRunDataDirPath,
-      jsonActionLog
+      jsonActionLog,
     );
     if (actionResponse.status === "error") {
       reportAPIResponse(actionResponse);
@@ -118,7 +118,7 @@ export function PanoramaControlV2() {
         }
       };
     },
-    [streetViewRef]
+    [streetViewRef],
   );
 
   // Action function - link
@@ -160,7 +160,7 @@ export function PanoramaControlV2() {
         }
       };
     },
-    [streetViewRef]
+    [streetViewRef],
   );
 
   // // Capture function
@@ -169,13 +169,13 @@ export function PanoramaControlV2() {
     const etimeResponse = await window.api.invoke(
       "write-etime",
       dataDirPaths.participantRunDataDirPath,
-      "capture"
+      "capture",
     );
     reportAPIResponse(etimeResponse);
 
     if (!mapDivRef) {
       console.error(
-        "[PanoramaControl:captureStreetViewScene] Undefined mapDivRef."
+        "[PanoramaControl:captureStreetViewScene] Undefined mapDivRef.",
       );
       return;
     }

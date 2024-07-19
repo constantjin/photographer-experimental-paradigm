@@ -82,7 +82,7 @@ function CrossFixationBeforePreview() {
       const etimeResponse = await window.api.invoke(
         "write-etime",
         dataDirPaths.participantRunDataDirPath,
-        "trial_fixation"
+        "trial_fixation",
       );
       reportAPIResponse(etimeResponse);
 
@@ -90,14 +90,14 @@ function CrossFixationBeforePreview() {
         "street:store-capture",
         base64EncodedCapture,
         dataDirPaths.runCaptureDirPath,
-        `trial_${currentTrialNumber}`
+        `trial_${currentTrialNumber}`,
       );
       reportAPIResponse(imageStoreResponse);
       const uploadEnd = performance.now();
 
       const jitteredFixationCaptureDurationInMs = jitter(
         fixationDurationInMs,
-        jitterRatio
+        jitterRatio,
       );
       const uploadDelay = uploadEnd - uploadStart;
       if (jitteredFixationCaptureDurationInMs > uploadDelay) {
@@ -143,13 +143,13 @@ function CapturePreview() {
       const etimeResponse = await window.api.invoke(
         "write-etime",
         dataDirPaths.participantRunDataDirPath,
-        "trial_preview"
+        "trial_preview",
       );
       reportAPIResponse(etimeResponse);
 
       const resizeResponse = await window.api.invoke(
         "clip:resize-image",
-        `data:image/png;base64,${base64EncodedCapture}`
+        `data:image/png;base64,${base64EncodedCapture}`,
       );
       reportAPIResponse(resizeResponse);
       const normalizedData = await noramlizeImageBuffer(resizeResponse.data);
@@ -158,7 +158,7 @@ function CapturePreview() {
         "clip:predict-clip-image",
         normalizedData,
         dataDirPaths.runFeatureVectorDirPath,
-        `image_feature_trial_${currentTrialNumber}`
+        `image_feature_trial_${currentTrialNumber}`,
       );
       reportAPIResponse(clipImageResponse);
       setClipImageFeature(clipImageResponse.data);
@@ -216,12 +216,12 @@ function CrossFixationBeforeMultimodal() {
       const etimeResponse = await window.api.invoke(
         "write-etime",
         dataDirPaths.participantRunDataDirPath,
-        "trial_fixation"
+        "trial_fixation",
       );
       reportAPIResponse(etimeResponse);
 
       const blobImage = await base64ToBlob(
-        `data:image/png;base64,${base64EncodedCapture}`
+        `data:image/png;base64,${base64EncodedCapture}`,
       );
       if (!azureAPIUrl || !azureAPIKey) {
         throw "AzureAPIUrl and AzureAPIKey not set.";
@@ -260,7 +260,7 @@ function CrossFixationBeforeMultimodal() {
                 speakingRate,
               },
             }),
-          }
+          },
         );
         const googleTTSEncodedData = (await googleTTSResponse.json())
           .audioContent;
@@ -271,7 +271,7 @@ function CrossFixationBeforeMultimodal() {
           "street:store-sound",
           googleTTSEncodedData,
           dataDirPaths.runCaptionAudioDirPath,
-          `trial_${currentTrialNumber}`
+          `trial_${currentTrialNumber}`,
         );
         reportAPIResponse(soundStoreResponse);
       } else {
@@ -283,7 +283,7 @@ function CrossFixationBeforeMultimodal() {
 
       const jitteredFixationCaptureDurationInMs = jitter(
         fixationDurationInMs,
-        jitterRatio
+        jitterRatio,
       );
       const etimeDelay = etimeEnd - etimeStart;
       if (jitteredFixationCaptureDurationInMs > etimeDelay) {
@@ -335,7 +335,7 @@ function Multimodal() {
         dataDirPaths.participantRunDataDirPath,
         `trial_${isTextModality ? "caption" : "voice"}:${
           predictedCaptionText.text
-        }/conf:${predictedCaptionText.confidence}`
+        }/conf:${predictedCaptionText.confidence}`,
       );
       reportAPIResponse(etimeResponse);
 
@@ -393,14 +393,14 @@ function CrossFixationBeforeReward() {
       const etimeResponse = await window.api.invoke(
         "write-etime",
         dataDirPaths.participantRunDataDirPath,
-        "trial_fixation"
+        "trial_fixation",
       );
       reportAPIResponse(etimeResponse);
       const etimeEnd = performance.now();
 
       const jitteredFixationCaptureDurationInMs = jitter(
         fixationDurationInMs,
-        jitterRatio
+        jitterRatio,
       );
       const etimeDelay = etimeEnd - etimeStart;
       if (jitteredFixationCaptureDurationInMs > etimeDelay) {
@@ -464,7 +464,7 @@ function Reward() {
       const etimeResponse = await window.api.invoke(
         "write-etime",
         dataDirPaths.participantRunDataDirPath,
-        `trial_reward:${similarity}/percent:${scorePercentage}`
+        `trial_reward:${similarity}/percent:${scorePercentage}`,
       );
       reportAPIResponse(etimeResponse);
       const etimeEnd = performance.now();
@@ -528,14 +528,14 @@ function CrossFixationAfterReward() {
       let etimeResponse = await window.api.invoke(
         "write-etime",
         dataDirPaths.participantRunDataDirPath,
-        "trial_fixation"
+        "trial_fixation",
       );
       reportAPIResponse(etimeResponse);
       const etimeEnd = performance.now();
 
       const jitteredFixationCaptureDurationInMs = jitter(
         fixationDurationInMs,
-        jitterRatio
+        jitterRatio,
       );
       const etimeDelay = etimeEnd - etimeStart;
       if (jitteredFixationCaptureDurationInMs > etimeDelay) {
@@ -550,14 +550,14 @@ function CrossFixationAfterReward() {
         etimeResponse = await window.api.invoke(
           "write-etime",
           dataDirPaths.participantRunDataDirPath,
-          `trial_${newTrialNumber}`
+          `trial_${newTrialNumber}`,
         );
         reportAPIResponse(etimeResponse);
 
         const actionResponse = await window.api.invoke(
           "street:write-action",
           dataDirPaths.participantRunDataDirPath,
-          `trial_${newTrialNumber}`
+          `trial_${newTrialNumber}`,
         );
         reportAPIResponse(actionResponse);
 

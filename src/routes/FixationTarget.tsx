@@ -21,14 +21,14 @@ export function FixationTarget() {
   const predictTextFeature = useCallback(async () => {
     const jitteredDurationInMs = jitter(
       fixationTargetDurationInMs,
-      jitterRatio
+      jitterRatio,
     );
     const startTime = performance.now();
 
     const etimeResponse = await window.api.invoke(
       "write-etime",
       dataDirPaths.participantRunDataDirPath,
-      "fixation_target"
+      "fixation_target",
     );
     reportAPIResponse(etimeResponse);
 
@@ -36,7 +36,7 @@ export function FixationTarget() {
       "clip:predict-clip-text",
       currentRunInfo?.captionTarget,
       dataDirPaths.runFeatureVectorDirPath,
-      "text_feature"
+      "text_feature",
     );
     reportAPIResponse(clipTextResponse);
     setClipTextFeature(clipTextResponse.data);
@@ -47,7 +47,13 @@ export function FixationTarget() {
       await delay(fixationTargetDurationInMs - totalDelay);
     }
     navigate("/exploration");
-  }, [currentRunInfo?.captionTarget, dataDirPaths.participantRunDataDirPath, dataDirPaths.runFeatureVectorDirPath, navigate, setClipTextFeature]);
+  }, [
+    currentRunInfo?.captionTarget,
+    dataDirPaths.participantRunDataDirPath,
+    dataDirPaths.runFeatureVectorDirPath,
+    navigate,
+    setClipTextFeature,
+  ]);
 
   useEffect(() => {
     predictTextFeature();

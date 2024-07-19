@@ -37,28 +37,28 @@ interface IExperimentalSetting {
 }
 
 export const experimentalSettingAtom = atom<IExperimentalSetting | undefined>(
-  undefined
+  undefined,
 );
 
 export const googleMapsAPIKeyAtom = focusAtom(
   experimentalSettingAtom,
-  (optic) => optic.optional().prop("googleMapsAPIKey")
+  (optic) => optic.optional().prop("googleMapsAPIKey"),
 );
 
 export const azureAPIUrlAtom = focusAtom(experimentalSettingAtom, (optic) =>
-  optic.optional().prop("azureAPIUrl")
+  optic.optional().prop("azureAPIUrl"),
 );
 
 export const azureAPIKeyAtom = focusAtom(experimentalSettingAtom, (optic) =>
-  optic.optional().prop("azureAPIKey")
+  optic.optional().prop("azureAPIKey"),
 );
 
 export const googleTTSAPIKeyAtom = focusAtom(experimentalSettingAtom, (optic) =>
-  optic.optional().prop("googleTTSAPIKey")
+  optic.optional().prop("googleTTSAPIKey"),
 );
 
 export const trialInfoAtom = focusAtom(experimentalSettingAtom, (optic) =>
-  optic.optional().prop("trialInfo")
+  optic.optional().prop("trialInfo"),
 );
 
 export const dataDirPathsAtom = atom({

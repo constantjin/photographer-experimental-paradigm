@@ -68,8 +68,8 @@ export function Panorama() {
             pov: initialPov,
             zoom: 0,
             ...initialControlOptions,
-          }
-        )
+          },
+        ),
       );
       mapRef.current?.focus();
       setMapDivRef(mapRef.current as HTMLDivElement);
@@ -77,13 +77,13 @@ export function Panorama() {
       const etimeResponse = await window.api.invoke(
         "write-etime",
         dataDirPaths.participantRunDataDirPath,
-        "trial_1"
+        "trial_1",
       );
       reportAPIResponse(etimeResponse);
       const actionResponse = await window.api.invoke(
         "street:write-action",
         dataDirPaths.participantRunDataDirPath,
-        "trial_1"
+        "trial_1",
       );
       reportAPIResponse(actionResponse);
       setStreetViewInit(true);

@@ -24,14 +24,12 @@ export function Sync() {
   //   }
   // };
 
-  const handleSyncInputInDocument = async (
-    event: KeyboardEvent
-  ) => {
+  const handleSyncInputInDocument = async (event: KeyboardEvent) => {
     if (event.code === "KeyS") {
       const etimeResponse = await window.api.invoke(
         "write-etime",
         dataDirPaths.participantRunDataDirPath,
-        "sync"
+        "sync",
       );
       reportAPIResponse(etimeResponse);
       navigate("/instruction");
@@ -44,7 +42,7 @@ export function Sync() {
 
     return () => {
       document.removeEventListener("keydown", handleSyncInputInDocument);
-    }
+    };
   }, []);
 
   return (

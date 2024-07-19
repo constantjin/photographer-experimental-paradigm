@@ -40,7 +40,7 @@ const ExperimentalSetting = z
           }),
           captionTarget: z.string(),
         })
-        .strict()
+        .strict(),
     ),
     trialInfo: z
       .object({
@@ -69,7 +69,7 @@ export async function registerParticipant(
   experimentalDataPath: string,
   participantName: string,
   participantID: string,
-  runInfo: IRunInfo[]
+  runInfo: IRunInfo[],
 ): Promise<APIResponse> {
   let resolvedDataPath = undefined;
 
@@ -96,7 +96,7 @@ export async function registerParticipant(
   try {
     resolvedDataPath = resolve(
       experimentalDataPath,
-      `${participantID}_${participantName}`
+      `${participantID}_${participantName}`,
     );
   } catch (e) {
     return {
@@ -115,7 +115,7 @@ export async function registerParticipant(
     try {
       const runInfoFilePath = resolve(resolvedDataPath, "runinfo.txt");
       const allRunsArray = (await readFile(runInfoFilePath, "utf-8")).split(
-        "\n"
+        "\n",
       );
       const allRunsDirNameArray = allRunsArray.map((run) => run.split("#")[0]);
       const completedRunsArray = (
@@ -124,7 +124,7 @@ export async function registerParticipant(
         .filter((dirent) => dirent.isDirectory())
         .map((dirent) => dirent.name);
       const remainingRunsArray = allRunsDirNameArray.filter(
-        (run) => !completedRunsArray.includes(run)
+        (run) => !completedRunsArray.includes(run),
       );
 
       if (remainingRunsArray.length === 0) {
@@ -141,13 +141,13 @@ export async function registerParticipant(
       const currentRunDirNameIndex =
         allRunsDirNameArray.indexOf(currentRunDirName);
       const currentRunOriginalIndex = Number(
-        allRunsArray[currentRunDirNameIndex].split("#")[1]
+        allRunsArray[currentRunDirNameIndex].split("#")[1],
       );
 
       // Create the run root directory
       const participantRunDataDirPath = resolve(
         resolvedDataPath,
-        remainingRunsArray[0]
+        remainingRunsArray[0],
       );
       await mkdir(participantRunDataDirPath, { recursive: true });
 
@@ -157,13 +157,13 @@ export async function registerParticipant(
 
       const runFeatureVectorDirPath = resolve(
         participantRunDataDirPath,
-        "feature_vector"
+        "feature_vector",
       );
       await mkdir(runFeatureVectorDirPath, { recursive: true });
 
       const runCaptionAudioDirPath = resolve(
         participantRunDataDirPath,
-        "caption_audio"
+        "caption_audio",
       );
       await mkdir(runCaptionAudioDirPath, { recursive: true });
 
@@ -213,7 +213,7 @@ export async function registerParticipant(
           (runValue, index) =>
             `${index + 1}_${runValue.value.city.replace(/\s+/g, "_")}#${
               runValue.original_index
-            }`
+            }`,
         );
 
       const runInfoFilePath = resolve(resolvedDataPath, "runinfo.txt");
@@ -222,7 +222,7 @@ export async function registerParticipant(
       // Create the run root directory
       const participantRunDataDirPath = resolve(
         resolvedDataPath,
-        shuffledRunInfo[0].split("#")[0]
+        shuffledRunInfo[0].split("#")[0],
       );
       await mkdir(participantRunDataDirPath, { recursive: true });
 
@@ -232,13 +232,13 @@ export async function registerParticipant(
 
       const runFeatureVectorDirPath = resolve(
         participantRunDataDirPath,
-        "feature_vector"
+        "feature_vector",
       );
       await mkdir(runFeatureVectorDirPath, { recursive: true });
 
       const runCaptionAudioDirPath = resolve(
         participantRunDataDirPath,
-        "caption_audio"
+        "caption_audio",
       );
       await mkdir(runCaptionAudioDirPath, { recursive: true });
 
@@ -289,7 +289,7 @@ export async function handleLoadSetting(_): Promise<APIResponse> {
   } else {
     try {
       const data = ExperimentalSetting.parse(
-        JSON.parse(await readFile(filePaths[0], "utf-8"))
+        JSON.parse(await readFile(filePaths[0], "utf-8")),
       );
       return {
         status: "success",
@@ -312,13 +312,13 @@ export async function handleLoadSetting(_): Promise<APIResponse> {
 export async function writeEtimeFile(
   _,
   participantRunDataDirPath: string,
-  message: string
+  message: string,
 ): Promise<APIResponse> {
   const now = dayjs().format("YYYY-MM-DD HH:mm:ss.SSS");
   try {
     const resolvedFilePath = resolve(
       participantRunDataDirPath,
-      "log_etime.txt"
+      "log_etime.txt",
     );
     await appendFile(resolvedFilePath, `${now}\t${message}\n`, "utf-8");
     return {
@@ -340,13 +340,13 @@ export async function writeEtimeFile(
 export async function writeControllerActionFile(
   _,
   participantRunDataDirPath: string,
-  message: string
+  message: string,
 ): Promise<APIResponse> {
   const now = dayjs().format("YYYY-MM-DD HH:mm:ss.SSS");
   try {
     const resolvedFilePath = resolve(
       participantRunDataDirPath,
-      "controller_action.txt"
+      "controller_action.txt",
     );
     await appendFile(resolvedFilePath, `${now}\t${message}\n`, "utf-8");
     return {
@@ -370,7 +370,7 @@ export async function writeControllerActionFile(
 
 export async function loadCLIPTextModel(
   _,
-  clipTextModelPath: string
+  clipTextModelPath: string,
 ): Promise<APIResponse> {
   try {
     if (!clipTextTokenizer) {
@@ -404,7 +404,7 @@ export async function loadCLIPTextModel(
 
 export async function loadCLIPImageModel(
   _,
-  clipImageModelPath: string
+  clipImageModelPath: string,
 ): Promise<APIResponse> {
   try {
     if (!vips) {
@@ -440,7 +440,7 @@ export async function predictCLIPTextFeature(
   _,
   input: string,
   runFeatureVectorDirPath: string,
-  fileName: string
+  fileName: string,
 ): Promise<APIResponse> {
   if (!clipTextModel || !clipTextTokenizer) {
     return {
@@ -472,7 +472,7 @@ export async function predictCLIPTextFeature(
     // Write the textFeatur to a file
     const resolvedFilePath = resolve(
       runFeatureVectorDirPath,
-      `${fileName}.json`
+      `${fileName}.json`,
     );
     await writeFile(resolvedFilePath, JSON.stringify(Array.from(textFeature)));
 
@@ -500,12 +500,12 @@ export async function storeCapturedImage(
   _,
   base64Url: string,
   participantDataDirPath: string,
-  imageName: string
+  imageName: string,
 ): Promise<APIResponse> {
   try {
     const resolvedFilePath = resolve(
       participantDataDirPath,
-      `${imageName}.png`
+      `${imageName}.png`,
     );
     await writeFile(resolvedFilePath, base64Url, "base64");
     return {
@@ -531,12 +531,12 @@ export async function storeCaptionSound(
   _,
   base64Url: string,
   captionSoundDataDirPath: string,
-  soundName: string
+  soundName: string,
 ): Promise<APIResponse> {
   try {
     const resolvedFilePath = resolve(
       captionSoundDataDirPath,
-      `${soundName}.mp3`
+      `${soundName}.mp3`,
     );
     await writeFile(resolvedFilePath, base64Url, "base64");
     return {
@@ -560,7 +560,7 @@ export async function storeCaptionSound(
 
 export async function resizeImageForCLIP(
   _,
-  input: string
+  input: string,
 ): Promise<APIResponse> {
   if (!vips) {
     return {
@@ -615,7 +615,7 @@ export async function predictCLIPImageFeature(
   _,
   input: Float32Array,
   runFeatureVectorDirPath: string,
-  fileName: string
+  fileName: string,
 ): Promise<APIResponse> {
   if (!clipImageModel) {
     return {
@@ -645,7 +645,7 @@ export async function predictCLIPImageFeature(
     // Write the textFeature to a file
     const resolvedFilePath = resolve(
       runFeatureVectorDirPath,
-      `${fileName}.json`
+      `${fileName}.json`,
     );
     await writeFile(resolvedFilePath, JSON.stringify(Array.from(imageFeature)));
 

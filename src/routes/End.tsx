@@ -5,7 +5,6 @@ import { dataDirPathsAtom } from "@/stores/experiment";
 import { reportAPIResponse } from "@/utils/api";
 
 export function End() {
-
   const dataDirPaths = useAtomValue(dataDirPathsAtom);
 
   useEffect(() => {
@@ -13,7 +12,7 @@ export function End() {
       const etimeResponse = await window.api.invoke(
         "write-etime",
         dataDirPaths.participantRunDataDirPath,
-        "end"
+        "end",
       );
       reportAPIResponse(etimeResponse);
     };
@@ -23,9 +22,7 @@ export function End() {
 
   return (
     <div className="flex flex-col justify-center text-center text-white">
-      <h1 className="text-4xl">
-        End
-      </h1>
+      <h1 className="text-4xl">End</h1>
     </div>
   );
 }

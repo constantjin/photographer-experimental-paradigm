@@ -34,13 +34,16 @@ export function PanoramaControl() {
   const captureTimeoutInMs = 20 * 1000; // ms
 
   // Helper functions
-  const setActionInterval = useCallback((actionFunction: () => void, interval: number) => {
-    resetActionInterval();
-    actionFunction();
-    actionIntervalRef.current = setInterval(() => {
+  const setActionInterval = useCallback(
+    (actionFunction: () => void, interval: number) => {
+      resetActionInterval();
       actionFunction();
-    }, interval);
-  }, []);
+      actionIntervalRef.current = setInterval(() => {
+        actionFunction();
+      }, interval);
+    },
+    [],
+  );
 
   const resetActionInterval = () => {
     if (actionIntervalRef.current) {
@@ -49,12 +52,15 @@ export function PanoramaControl() {
     }
   };
 
-  const setCaptureTimeout = useCallback((captureFunction: () => void, timeout: number) => {
-    resetCaptureTimeout();
-    captureTimeoutRef.current = setInterval(() => {
-      captureFunction();
-    }, timeout);
-  }, []);
+  const setCaptureTimeout = useCallback(
+    (captureFunction: () => void, timeout: number) => {
+      resetCaptureTimeout();
+      captureTimeoutRef.current = setInterval(() => {
+        captureFunction();
+      }, timeout);
+    },
+    [],
+  );
 
   const resetCaptureTimeout = () => {
     if (captureTimeoutRef.current) {
@@ -82,108 +88,123 @@ export function PanoramaControl() {
   // };
 
   // Action function - viewpoint
-  const viewPointChange = useCallback((headingAmount: number) => {
-    return () => {
-      const currPov = streetViewRef?.getPov();
-      const currHeading = currPov?.heading;
-      if (currHeading) {
-        streetViewRef?.setPov({
-          ...currPov,
-          heading: currHeading + headingAmount,
-        });
-      }
-    };
-  }, [streetViewRef]);
+  const viewPointChange = useCallback(
+    (headingAmount: number) => {
+      return () => {
+        const currPov = streetViewRef?.getPov();
+        const currHeading = currPov?.heading;
+        if (currHeading) {
+          streetViewRef?.setPov({
+            ...currPov,
+            heading: currHeading + headingAmount,
+          });
+        }
+      };
+    },
+    [streetViewRef],
+  );
 
   // Action function - link
-  const locationChange = useCallback((backward = false) => {
-    return () => {
-      const mapLinks = streetViewRef?.getLinks();
-      const linkLength = mapLinks?.length;
-      const currPov = streetViewRef?.getPov();
-      const currHeading = currPov?.heading;
+  const locationChange = useCallback(
+    (backward = false) => {
+      return () => {
+        const mapLinks = streetViewRef?.getLinks();
+        const linkLength = mapLinks?.length;
+        const currPov = streetViewRef?.getPov();
+        const currHeading = currPov?.heading;
 
-      if (!mapLinks || !linkLength || linkLength === 0 || !currHeading) {
-        return;
-      }
+        if (!mapLinks || !linkLength || linkLength === 0 || !currHeading) {
+          return;
+        }
 
-      const difference = (link: google.maps.StreetViewLink | null) => {
-        if (!link?.heading) {
-          return -Infinity;
+        const difference = (link: google.maps.StreetViewLink | null) => {
+          if (!link?.heading) {
+            return -Infinity;
+          }
+          let diff = Math.abs((currHeading % 360) - link.heading);
+          if (diff > 180) {
+            diff = Math.abs(360 - diff);
+          }
+          return diff;
+        };
+
+        mapLinks.sort((link1, link2) => {
+          return difference(link1) - difference(link2);
+        });
+
+        let nextPanoId;
+        if (backward) {
+          nextPanoId = mapLinks[linkLength - 1]?.pano;
+        } else {
+          nextPanoId = mapLinks[0]?.pano;
         }
-        let diff = Math.abs((currHeading % 360) - link.heading);
-        if (diff > 180) {
-          diff = Math.abs(360 - diff);
+        if (nextPanoId) {
+          streetViewRef?.setPano(nextPanoId);
         }
-        return diff;
       };
-
-      mapLinks.sort((link1, link2) => {
-        return difference(link1) - difference(link2);
-      });
-
-      let nextPanoId;
-      if (backward) {
-        nextPanoId = mapLinks[linkLength - 1]?.pano;
-      } else {
-        nextPanoId = mapLinks[0]?.pano;
-      }
-      if (nextPanoId) {
-        streetViewRef?.setPano(nextPanoId);
-      }
-    };
-  }, [streetViewRef]);
+    },
+    [streetViewRef],
+  );
 
   // Capture function
-  const captureStreetViewScene = useCallback((success: boolean) => {
-    return async () => {
-      resetActionInterval();
-      // // Show the Captured component
-      // setCapturedVisible(true);
-      const etimeResponse = await window.api.invoke(
-        "write-etime",
-        dataDirPaths.participantRunDataDirPath,
-        `${success ? "capture" : "capture_failed"}`
-      );
-      reportAPIResponse(etimeResponse);
-
-      if (!mapDivRef) {
-        console.error(
-          "[PanoramaControl:captureStreetViewScene] Undefined mapDivRef."
+  const captureStreetViewScene = useCallback(
+    (success: boolean) => {
+      return async () => {
+        resetActionInterval();
+        // // Show the Captured component
+        // setCapturedVisible(true);
+        const etimeResponse = await window.api.invoke(
+          "write-etime",
+          dataDirPaths.participantRunDataDirPath,
+          `${success ? "capture" : "capture_failed"}`,
         );
-        return;
-      }
+        reportAPIResponse(etimeResponse);
 
-      streetViewRef?.setOptions({
-        linksControl: false,
-      });
+        if (!mapDivRef) {
+          console.error(
+            "[PanoramaControl:captureStreetViewScene] Undefined mapDivRef.",
+          );
+          return;
+        }
 
-      await delay(50);
+        streetViewRef?.setOptions({
+          linksControl: false,
+        });
 
-      const capturedCanvas = await html2canvas(mapDivRef, {
-        useCORS: true,
-        backgroundColor: null,
-      });
-      const base64EncodedImage = capturedCanvas
-      .toDataURL("image/png", 1.0)
-      .substring("data:image/png;base64,".length);
+        await delay(50);
 
-      // Show the Captured component
-      setCapturedVisible(true);
-      const imageStoreResponse = await window.api.invoke(
-        "street:store-capture",
-        base64EncodedImage,
-        dataDirPaths.runCaptureDirPath,
-        `trial_${currentTrialNumber}`
-      );
-      reportAPIResponse(imageStoreResponse);
+        const capturedCanvas = await html2canvas(mapDivRef, {
+          useCORS: true,
+          backgroundColor: null,
+        });
+        const base64EncodedImage = capturedCanvas
+          .toDataURL("image/png", 1.0)
+          .substring("data:image/png;base64,".length);
 
+        // Show the Captured component
+        setCapturedVisible(true);
+        const imageStoreResponse = await window.api.invoke(
+          "street:store-capture",
+          base64EncodedImage,
+          dataDirPaths.runCaptureDirPath,
+          `trial_${currentTrialNumber}`,
+        );
+        reportAPIResponse(imageStoreResponse);
 
-      streetViewRef?.setOptions({
-        linksControl: true,
-      });
-    };
-  }, [currentTrialNumber, dataDirPaths.participantRunDataDirPath, dataDirPaths.runCaptureDirPath, mapDivRef, setCapturedVisible, streetViewRef]);
+        streetViewRef?.setOptions({
+          linksControl: true,
+        });
+      };
+    },
+    [
+      currentTrialNumber,
+      dataDirPaths.participantRunDataDirPath,
+      dataDirPaths.runCaptureDirPath,
+      mapDivRef,
+      setCapturedVisible,
+      streetViewRef,
+    ],
+  );
 
   // Register action commands
   useEffect(() => {
@@ -203,13 +224,13 @@ export function PanoramaControl() {
           case "left":
             setActionInterval(
               viewPointChange(-0.8),
-              viewpointChangeIntervalInMs
+              viewpointChangeIntervalInMs,
             );
             break;
           case "right":
             setActionInterval(
               viewPointChange(0.8),
-              viewpointChangeIntervalInMs
+              viewpointChangeIntervalInMs,
             );
             break;
           case "up":
@@ -221,7 +242,15 @@ export function PanoramaControl() {
         }
       }
     }
-  }, [captureStreetViewScene, controllerAction, controllerEnabled, locationChange, setActionInterval, viewPointChange, captureTimerEnabled]);
+  }, [
+    captureStreetViewScene,
+    controllerAction,
+    controllerEnabled,
+    locationChange,
+    setActionInterval,
+    viewPointChange,
+    captureTimerEnabled,
+  ]);
 
   // Register capture timer
   useEffect(() => {
@@ -232,7 +261,12 @@ export function PanoramaControl() {
       console.log("capture interval was reset.");
       resetCaptureTimeout();
     }
-  }, [captureStreetViewScene, captureTimeoutInMs, captureTimerEnabled, setCaptureTimeout]);
+  }, [
+    captureStreetViewScene,
+    captureTimeoutInMs,
+    captureTimerEnabled,
+    setCaptureTimeout,
+  ]);
 
   return <div></div>;
 }

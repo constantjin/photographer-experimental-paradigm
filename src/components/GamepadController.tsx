@@ -79,7 +79,7 @@ export function GamepadController() {
     _moveToLinkDirection(backward);
     intervalRef.current = setInterval(
       () => _moveToLinkDirection(backward),
-      locationChangeDelay
+      locationChangeDelay,
     );
   };
 
@@ -139,13 +139,13 @@ export function GamepadController() {
     const etimeResponse = await window.api.invoke(
       "write-etime",
       dataDirPaths.participantRunDataDirPath,
-      `trial_${currentTrialNumber}`
+      `trial_${currentTrialNumber}`,
     );
     reportAPIResponse(etimeResponse);
 
     explorationTimeoutRef.current = setTimeout(
       () => captureStreetViewScene(),
-      explorationTimeoutDelay
+      explorationTimeoutDelay,
     );
   };
 
@@ -154,7 +154,7 @@ export function GamepadController() {
     const etimeResponse = await window.api.invoke(
       "write-etime",
       dataDirPaths.participantRunDataDirPath,
-      "capture"
+      "capture",
     );
     reportAPIResponse(etimeResponse);
 
@@ -181,7 +181,7 @@ export function GamepadController() {
       "street:store-capture",
       base64EncodedImage,
       dataDirPaths.runCaptureDirPath,
-      `trial_${currentTrialNumber}`
+      `trial_${currentTrialNumber}`,
     );
     reportAPIResponse(imageStoreResponse);
 

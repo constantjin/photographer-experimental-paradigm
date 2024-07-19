@@ -28,7 +28,7 @@ export const streetViewLogAtom = atom(
       set(streetViewLogAtomConfig, newLog);
       console.log(get(streetViewLogAtomConfig));
     }
-  }
+  },
 );
 
 export const capturedStateAtom = atom({

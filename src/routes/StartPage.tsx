@@ -38,24 +38,24 @@ const canStartExperimentAtom = atom(false);
 export function StartPage() {
   const [settingLoadState, setSettingLoadState] = useAtom(settingLoadStateAtom);
   const [clipTextLoadState, setClipTextLoadState] = useAtom(
-    clipTextLoadStateAtom
+    clipTextLoadStateAtom,
   );
   const [clipImageLoadState, setClipImageLoadState] = useAtom(
-    clipImageLoadStateAtom
+    clipImageLoadStateAtom,
   );
   const [gamepadState, setGamepadState] = useAtom(gamepadStateAtom);
   const [experimentalSetting, setExperimentalSetting] = useAtom(
-    experimentalSettingAtom
+    experimentalSettingAtom,
   );
 
   const [participantData, setParticipantData] = useAtom(participantDataAtom);
   const [registrationState, setRegistrationState] = useAtom(
-    registrationStateAtom
+    registrationStateAtom,
   );
   const [, setDataDirPaths] = useAtom(dataDirPathsAtom);
   const [, setCurrentRunInfo] = useAtom(currentRunInfoAtom);
   const [canStartExperiment, setCanStartExperiment] = useAtom(
-    canStartExperimentAtom
+    canStartExperimentAtom,
   );
 
   const navigate = useNavigate();
@@ -71,7 +71,7 @@ export function StartPage() {
     if (settingResponse.status === "success") {
       const clipTextResponse = await window.api.invoke(
         "clip:load-clip-text",
-        settingResponse.data.clipTextModelPath
+        settingResponse.data.clipTextModelPath,
       );
       setClipTextLoadState({
         status: clipTextResponse.status,
@@ -83,7 +83,7 @@ export function StartPage() {
     if (settingResponse.status === "success") {
       const clipImageResponse = await window.api.invoke(
         "clip:load-clip-image",
-        settingResponse.data.clipImageModelPath
+        settingResponse.data.clipImageModelPath,
       );
       setClipImageLoadState({
         status: clipImageResponse.status,
@@ -95,7 +95,9 @@ export function StartPage() {
     setExperimentalSetting(settingResponse.data);
   };
 
-  const onChangeParticipantInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeParticipantInput = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setParticipantData({
       ...participantData,
       [event.target.name]: event.target.value.toUpperCase(),
@@ -108,7 +110,7 @@ export function StartPage() {
       experimentalSetting?.experimentalDataStorePath,
       participantData.name,
       participantData.id,
-      experimentalSetting?.runInfo
+      experimentalSetting?.runInfo,
     );
     setRegistrationState({
       status: registerResponse.status,
