@@ -9,67 +9,29 @@ import {
 } from "fs/promises";
 import { resolve } from "path";
 import * as ort from "onnxruntime-node";
-import { z } from "zod";
+import type { z } from "zod";
 import dayjs from "dayjs";
 
 import Tokenizer from "../shared/clip_bpe";
 import Vips from "wasm-vips";
 import fetch from "node-fetch";
 
+import type { RunInfoSchema } from "../shared/constants";
+import { ExperimentalSettingSchema } from "../shared/constants";
+
 let clipTextTokenizer: Tokenizer | undefined = undefined;
 let clipTextModel: ort.InferenceSession | undefined = undefined;
 let vips: typeof Vips | undefined = undefined;
 let clipImageModel: ort.InferenceSession | undefined = undefined;
 
-const ExperimentalSetting = z
-  .object({
-    googleMapsAPIKey: z.string(),
-    clipTextModelPath: z.string(),
-    clipImageModelPath: z.string(),
-    experimentalDataStorePath: z.string(),
-    azureAPIUrl: z.string(),
-    azureAPIKey: z.string(),
-    googleTTSAPIKey: z.string(),
-    runInfo: z.array(
-      z
-        .object({
-          city: z.string(),
-          latlng: z.object({
-            lat: z.number(),
-            lng: z.number(),
-          }),
-          captionTarget: z.string(),
-        })
-        .strict(),
-    ),
-    trialInfo: z
-      .object({
-        captureIntervalInMs: z.number(),
-        totalNumberOfTrials: z.number(),
-        fixationDurationInMs: z.number(),
-        fixationJitterRatio: z.number(),
-        capturePreviewDurationInMs: z.number(),
-        multimodalDurationInMs: z.number(),
-        speakingRate: z.number(),
-        propabilityOfCaptionText: z.number(),
-        rewardDurationInMs: z.number(),
-        minSimilarityThreshold: z.number(),
-        maxSimilarityThreshold: z.number(),
-      })
-      .strict(),
-  })
-  .strict();
-
-interface IRunInfo {
-  city: string;
-}
+type RunInfo = z.infer<typeof RunInfoSchema>;
 
 export async function registerParticipant(
   _,
   experimentalDataPath: string,
   participantName: string,
   participantID: string,
-  runInfo: IRunInfo[],
+  runInfo: RunInfo[],
 ): Promise<APIResponse> {
   let resolvedDataPath = undefined;
 
@@ -288,7 +250,7 @@ export async function handleLoadSetting(_): Promise<APIResponse> {
     };
   } else {
     try {
-      const data = ExperimentalSetting.parse(
+      const data = ExperimentalSettingSchema.parse(
         JSON.parse(await readFile(filePaths[0], "utf-8")),
       );
       return {
@@ -585,18 +547,18 @@ export async function resizeImageForCLIP(
   const inputToArrayBuffer = await (await fetch(input)).arrayBuffer();
 
   // resize types available: cubic, linear, lanczos2, lanczos3, nearest, mitchell
-  let im1 = vips.Image.newFromBuffer(inputToArrayBuffer);
+  const im1 = vips.Image.newFromBuffer(inputToArrayBuffer);
 
   // Resize so smallest side is `size` px:
   const scale = 224 / Math.min(im1.height, im1.width);
-  let im2 = im1.resize(scale, { kernel: vips.Kernel[resizeType] });
+  const im2 = im1.resize(scale, { kernel: vips.Kernel[resizeType] });
 
   // crop to `size` x `size`:
-  let left = (im2.width - size) / 2;
-  let top = (im2.height - size) / 2;
-  let im3 = im2.crop(left, top, size, size);
+  const left = (im2.width - size) / 2;
+  const top = (im2.height - size) / 2;
+  const im3 = im2.crop(left, top, size, size);
 
-  let outBuffer = new Uint8Array(im3.writeToBuffer(".png"));
+  const outBuffer = new Uint8Array(im3.writeToBuffer(".png"));
   im1.delete(), im2.delete(), im3.delete();
   // let resizedBlob = new Blob([outBuffer], { type: "image/png" });
   // const base64Blob = await blobToBase64(resizedBlob);

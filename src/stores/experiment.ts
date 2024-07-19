@@ -1,42 +1,13 @@
 import { atom } from "jotai";
 import { focusAtom } from "jotai/optics";
+import type { z } from "zod";
 
-interface IRunInfo {
-  city: string;
-  latlng: {
-    lat: number;
-    lng: number;
-  };
-  captionTarget: string;
-}
+import type { RunInfoSchema, ExperimentalSettingSchema } from "@constants";
 
-interface ITrialInfo {
-  captureIntervalInMs: number;
-  totalNumberOfTrials: number;
-  fixationDurationInMs: number;
-  fixationJitterRatio: number;
-  capturePreviewDurationInMs: number;
-  multimodalDurationInMs: number;
-  speakingRate: number;
-  propabilityOfCaptionText: number;
-  rewardDurationInMs: number;
-  minSimilarityThreshold: number;
-  maxSimilarityThreshold: number;
-}
+type RunInfo = z.infer<typeof RunInfoSchema>;
+type ExperimentalSetting = z.infer<typeof ExperimentalSettingSchema>;
 
-interface IExperimentalSetting {
-  googleMapsAPIKey: string;
-  clipTextModelPath: string;
-  clipImageModelPath: string;
-  experimentalDataStorePath: string;
-  azureAPIUrl: string;
-  azureAPIKey: string;
-  googleTTSAPIKey: string;
-  runInfo: IRunInfo[];
-  trialInfo: ITrialInfo;
-}
-
-export const experimentalSettingAtom = atom<IExperimentalSetting | undefined>(
+export const experimentalSettingAtom = atom<ExperimentalSetting | undefined>(
   undefined,
 );
 
@@ -68,5 +39,5 @@ export const dataDirPathsAtom = atom({
   runCaptionAudioDirPath: "",
 });
 
-export const currentRunInfoAtom = atom<IRunInfo | undefined>(undefined);
+export const currentRunInfoAtom = atom<RunInfo | undefined>(undefined);
 export const currentTrialNumberAtom = atom(0);

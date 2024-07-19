@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export const channels = {
   LOAD_SETTING: "load-setting",
   REGISTER_PARTICIPANT: "register-participant",
@@ -15,3 +17,44 @@ export const channels = {
     WRITE_ACTION: "street:write-action",
   },
 };
+
+export const RunInfoSchema = z
+  .object({
+    city: z.string(),
+    latlng: z.object({
+      lat: z.number(),
+      lng: z.number(),
+    }),
+    captionTarget: z.string(),
+  })
+  .strict();
+
+export const TrialInfoSchema = z
+  .object({
+    captureIntervalInMs: z.number(),
+    totalNumberOfTrials: z.number(),
+    fixationDurationInMs: z.number(),
+    fixationJitterRatio: z.number(),
+    capturePreviewDurationInMs: z.number(),
+    multimodalDurationInMs: z.number(),
+    speakingRate: z.number(),
+    propabilityOfCaptionText: z.number(),
+    rewardDurationInMs: z.number(),
+    minSimilarityThreshold: z.number(),
+    maxSimilarityThreshold: z.number(),
+  })
+  .strict();
+
+export const ExperimentalSettingSchema = z
+  .object({
+    googleMapsAPIKey: z.string(),
+    clipTextModelPath: z.string(),
+    clipImageModelPath: z.string(),
+    experimentalDataStorePath: z.string(),
+    azureAPIUrl: z.string(),
+    azureAPIKey: z.string(),
+    googleTTSAPIKey: z.string(),
+    runInfo: z.array(RunInfoSchema),
+    trialInfo: TrialInfoSchema,
+  })
+  .strict();
