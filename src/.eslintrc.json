@@ -18,8 +18,17 @@
   },
   "plugins": ["react"],
   "rules": {
+    "no-unused-vars": "off",
     "react/react-in-jsx-scope": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "no-undef": "off"
+      }
+    }
+  ]
   // "settings": {
   // 	"react": {
   // 		"pragma": "React",
