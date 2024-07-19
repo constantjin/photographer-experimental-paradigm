@@ -5,6 +5,7 @@ import { useAtomValue } from "jotai";
 import { dataDirPathsAtom, currentRunInfoAtom } from "@/stores/experiment";
 import { delay } from "@/utils";
 import { reportAPIResponse } from "@/utils/api";
+import { channels } from "@constants";
 
 export function Instruction() {
   // Page-specific constants
@@ -19,7 +20,7 @@ export function Instruction() {
     const initInstruction = async () => {
       const startTime = performance.now();
       const etimeResponse = await window.api.invoke(
-        "write-etime",
+        channels.WRITE_ETIME,
         dataDirPaths.participantRunDataDirPath,
         "instruction",
       );

@@ -19,6 +19,8 @@ import {
 
 import { delay } from "@/utils";
 import { reportAPIResponse } from "@/utils/api";
+import { channels } from "@constants";
+
 import html2canvas from "html2canvas";
 
 export function PanoramaControlV2() {
@@ -95,7 +97,7 @@ export function PanoramaControlV2() {
     });
 
     const actionResponse = await window.api.invoke(
-      "street:write-action",
+      channels.STREET.WRITE_ACTION,
       dataDirPaths.participantRunDataDirPath,
       jsonActionLog,
     );
@@ -167,7 +169,7 @@ export function PanoramaControlV2() {
   const handleCaptureAction = useCallback(async () => {
     resetActionInterval();
     const etimeResponse = await window.api.invoke(
-      "write-etime",
+      channels.WRITE_ETIME,
       dataDirPaths.participantRunDataDirPath,
       "capture",
     );

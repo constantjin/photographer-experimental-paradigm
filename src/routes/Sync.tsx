@@ -4,6 +4,7 @@ import { useAtomValue } from "jotai";
 
 import { dataDirPathsAtom } from "@/stores/experiment";
 import { reportAPIResponse } from "@/utils/api";
+import { channels } from "@constants";
 
 export function Sync() {
   const divRef = useRef<HTMLDivElement>(null);
@@ -27,7 +28,7 @@ export function Sync() {
   const handleSyncInputInDocument = async (event: KeyboardEvent) => {
     if (event.code === "KeyS") {
       const etimeResponse = await window.api.invoke(
-        "write-etime",
+        channels.WRITE_ETIME,
         dataDirPaths.participantRunDataDirPath,
         "sync",
       );

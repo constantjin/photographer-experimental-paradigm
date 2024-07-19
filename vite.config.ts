@@ -13,6 +13,7 @@ export default defineConfig({
     alias: {
       "@": path.join(__dirname, "src"),
       styles: path.join(__dirname, "src/assets/styles"),
+      "@constants": path.join(__dirname, "electron/shared/constants.ts"),
     },
   },
   plugins: [

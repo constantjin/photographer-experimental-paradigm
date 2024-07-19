@@ -9,6 +9,7 @@ import {
   dataDirPathsAtom,
   currentRunInfoAtom,
 } from "@/stores/experiment";
+import { channels } from "@constants";
 
 const gamepadStateAtom = atom(false);
 const settingLoadStateAtom = atom({
@@ -61,7 +62,7 @@ export function StartPage() {
   const navigate = useNavigate();
 
   const initializeExperiment = async () => {
-    const settingResponse = await window.api.invoke("load-setting");
+    const settingResponse = await window.api.invoke(channels.LOAD_SETTING);
     setSettingLoadState({
       status: settingResponse.status,
       message: settingResponse.message,
@@ -70,7 +71,7 @@ export function StartPage() {
 
     if (settingResponse.status === "success") {
       const clipTextResponse = await window.api.invoke(
-        "clip:load-clip-text",
+        channels.CLIP.LOAD_CLIP_TEXT,
         settingResponse.data.clipTextModelPath,
       );
       setClipTextLoadState({
@@ -82,7 +83,7 @@ export function StartPage() {
 
     if (settingResponse.status === "success") {
       const clipImageResponse = await window.api.invoke(
-        "clip:load-clip-image",
+        channels.CLIP.LOAD_CLIP_IMAGE,
         settingResponse.data.clipImageModelPath,
       );
       setClipImageLoadState({
@@ -106,7 +107,7 @@ export function StartPage() {
 
   const registerParticpant = async () => {
     const registerResponse = await window.api.invoke(
-      "register-participant",
+      channels.REGISTER_PARTICIPANT,
       experimentalSetting?.experimentalDataStorePath,
       participantData.name,
       participantData.id,

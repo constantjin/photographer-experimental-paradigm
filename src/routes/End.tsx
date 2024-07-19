@@ -3,6 +3,7 @@ import { useAtomValue } from "jotai";
 
 import { dataDirPathsAtom } from "@/stores/experiment";
 import { reportAPIResponse } from "@/utils/api";
+import { channels } from "@constants";
 
 export function End() {
   const dataDirPaths = useAtomValue(dataDirPathsAtom);
@@ -10,7 +11,7 @@ export function End() {
   useEffect(() => {
     const initInstruction = async () => {
       const etimeResponse = await window.api.invoke(
-        "write-etime",
+        channels.WRITE_ETIME,
         dataDirPaths.participantRunDataDirPath,
         "end",
       );

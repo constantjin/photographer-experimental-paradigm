@@ -22,6 +22,7 @@ import {
 } from "@/stores/capture";
 
 import { reportAPIResponse } from "@/utils/api";
+import { channels } from "@constants";
 
 const initialPov = {
   heading: 34,
@@ -75,13 +76,13 @@ export function Panorama() {
       setMapDivRef(mapRef.current as HTMLDivElement);
       setCurrentTrialNumber(1);
       const etimeResponse = await window.api.invoke(
-        "write-etime",
+        channels.WRITE_ETIME,
         dataDirPaths.participantRunDataDirPath,
         "trial_1",
       );
       reportAPIResponse(etimeResponse);
       const actionResponse = await window.api.invoke(
-        "street:write-action",
+        channels.STREET.WRITE_ACTION,
         dataDirPaths.participantRunDataDirPath,
         "trial_1",
       );

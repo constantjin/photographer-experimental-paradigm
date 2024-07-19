@@ -11,6 +11,7 @@ import { captureTimerEnabledAtom, capturedVisibleAtom } from "@/stores/capture";
 
 import { jitter, delay } from "@/utils";
 import { reportAPIResponse } from "@/utils/api";
+import { channels } from "@constants";
 
 export function Captured() {
   // Page-specific constants
@@ -46,7 +47,7 @@ export function Captured() {
     const newTrialNumber = currentTrialNumber + 1;
     setCurrentTrialNumber(newTrialNumber);
     const etimeResponse = await window.api.invoke(
-      "write-etime",
+      channels.WRITE_ETIME,
       dataDirPaths.participantRunDataDirPath,
       `trial_${newTrialNumber}`,
     );

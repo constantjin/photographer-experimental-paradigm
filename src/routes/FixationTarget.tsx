@@ -6,6 +6,7 @@ import { delay, jitter } from "@/utils";
 import { reportAPIResponse } from "@/utils/api";
 import { dataDirPathsAtom, currentRunInfoAtom } from "@/stores/experiment";
 import { clipTextFeatureAtom } from "@/stores/clip";
+import { channels } from "@constants";
 
 export function FixationTarget() {
   // Page-specific constants
@@ -26,14 +27,14 @@ export function FixationTarget() {
     const startTime = performance.now();
 
     const etimeResponse = await window.api.invoke(
-      "write-etime",
+      channels.WRITE_ETIME,
       dataDirPaths.participantRunDataDirPath,
       "fixation_target",
     );
     reportAPIResponse(etimeResponse);
 
     const clipTextResponse = await window.api.invoke(
-      "clip:predict-clip-text",
+      channels.CLIP.PREDICT_CLIP_TEXT,
       currentRunInfo?.captionTarget,
       dataDirPaths.runFeatureVectorDirPath,
       "text_feature",

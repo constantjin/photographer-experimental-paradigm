@@ -31,6 +31,7 @@ import { mapDivRefAtom, streetViewRefAtom } from "@/stores/streetview";
 import { reportAPIResponse } from "@/utils/api";
 import html2canvas from "html2canvas";
 import { delay } from "@/utils";
+import { channels } from "@constants";
 
 const renderMapComponentsByStatus = (status: GoogleMapStatus) => {
   if (status === GoogleMapStatus.FAILURE) {
@@ -104,7 +105,7 @@ export function Exploration() {
 
     captureIntervalRef.current = setInterval(async () => {
       const etimeResponse = await window.api.invoke(
-        "write-etime",
+        channels.WRITE_ETIME,
         dataDirPaths.participantRunDataDirPath,
         "capture_failed",
       );

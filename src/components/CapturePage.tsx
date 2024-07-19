@@ -27,6 +27,7 @@ import {
   base64ToBlob,
 } from "@/utils";
 import { reportAPIResponse } from "@/utils/api";
+import { channels } from "@constants";
 
 // function CrossFixation() {
 //     return (
@@ -80,14 +81,14 @@ function CrossFixationBeforePreview() {
     const init = async () => {
       const uploadStart = performance.now();
       const etimeResponse = await window.api.invoke(
-        "write-etime",
+        channels.WRITE_ETIME,
         dataDirPaths.participantRunDataDirPath,
         "trial_fixation",
       );
       reportAPIResponse(etimeResponse);
 
       const imageStoreResponse = await window.api.invoke(
-        "street:store-capture",
+        channels.STREET.STORE_CAPTURE,
         base64EncodedCapture,
         dataDirPaths.runCaptureDirPath,
         `trial_${currentTrialNumber}`,
@@ -141,21 +142,21 @@ function CapturePreview() {
     const init = async () => {
       const etimeStart = performance.now();
       const etimeResponse = await window.api.invoke(
-        "write-etime",
+        channels.WRITE_ETIME,
         dataDirPaths.participantRunDataDirPath,
         "trial_preview",
       );
       reportAPIResponse(etimeResponse);
 
       const resizeResponse = await window.api.invoke(
-        "clip:resize-image",
+        channels.CLIP.RESIZE_IMAGE,
         `data:image/png;base64,${base64EncodedCapture}`,
       );
       reportAPIResponse(resizeResponse);
       const normalizedData = await noramlizeImageBuffer(resizeResponse.data);
 
       const clipImageResponse = await window.api.invoke(
-        "clip:predict-clip-image",
+        channels.CLIP.PREDICT_CLIP_IMAGE,
         normalizedData,
         dataDirPaths.runFeatureVectorDirPath,
         `image_feature_trial_${currentTrialNumber}`,
@@ -214,7 +215,7 @@ function CrossFixationBeforeMultimodal() {
     const init = async () => {
       const etimeStart = performance.now();
       const etimeResponse = await window.api.invoke(
-        "write-etime",
+        channels.WRITE_ETIME,
         dataDirPaths.participantRunDataDirPath,
         "trial_fixation",
       );
@@ -268,7 +269,7 @@ function CrossFixationBeforeMultimodal() {
         setBase64EncodedVoice(`data:audio/mp3;base64,${googleTTSEncodedData}`);
 
         const soundStoreResponse = await window.api.invoke(
-          "street:store-sound",
+          channels.STREET.STORE_SOUND,
           googleTTSEncodedData,
           dataDirPaths.runCaptionAudioDirPath,
           `trial_${currentTrialNumber}`,
@@ -331,7 +332,7 @@ function Multimodal() {
     const init = async () => {
       const etimeStart = performance.now();
       const etimeResponse = await window.api.invoke(
-        "write-etime",
+        channels.WRITE_ETIME,
         dataDirPaths.participantRunDataDirPath,
         `trial_${isTextModality ? "caption" : "voice"}:${
           predictedCaptionText.text
@@ -391,7 +392,7 @@ function CrossFixationBeforeReward() {
     const init = async () => {
       const etimeStart = performance.now();
       const etimeResponse = await window.api.invoke(
-        "write-etime",
+        channels.WRITE_ETIME,
         dataDirPaths.participantRunDataDirPath,
         "trial_fixation",
       );
@@ -462,7 +463,7 @@ function Reward() {
       }
       const etimeStart = performance.now();
       const etimeResponse = await window.api.invoke(
-        "write-etime",
+        channels.WRITE_ETIME,
         dataDirPaths.participantRunDataDirPath,
         `trial_reward:${similarity}/percent:${scorePercentage}`,
       );
@@ -526,7 +527,7 @@ function CrossFixationAfterReward() {
       console.log("Load: Cross Fixation After");
       const etimeStart = performance.now();
       let etimeResponse = await window.api.invoke(
-        "write-etime",
+        channels.WRITE_ETIME,
         dataDirPaths.participantRunDataDirPath,
         "trial_fixation",
       );
@@ -548,14 +549,14 @@ function CrossFixationAfterReward() {
       } else {
         setCurrentTrialNumber(newTrialNumber);
         etimeResponse = await window.api.invoke(
-          "write-etime",
+          channels.WRITE_ETIME,
           dataDirPaths.participantRunDataDirPath,
           `trial_${newTrialNumber}`,
         );
         reportAPIResponse(etimeResponse);
 
         const actionResponse = await window.api.invoke(
-          "street:write-action",
+          channels.STREET.WRITE_ACTION,
           dataDirPaths.participantRunDataDirPath,
           `trial_${newTrialNumber}`,
         );

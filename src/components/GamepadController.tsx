@@ -12,6 +12,7 @@ import {
 import { dataDirPathsAtom, currentTrialNumberAtom } from "@/stores/experiment";
 import { reportAPIResponse } from "@/utils/api";
 import { delay } from "@/utils";
+import { channels } from "@constants";
 
 type StreetViewAction = "stop" | "up" | "down" | "left" | "right" | "capture";
 
@@ -88,7 +89,7 @@ export function GamepadController() {
   };
 
   const _moveToLinkDirection = (backward = false) => {
-    let mapLinks = streetViewRef?.getLinks();
+    const mapLinks = streetViewRef?.getLinks();
     const linkLength = mapLinks?.length;
     const currPov = streetViewRef?.getPov();
     const currHeading = currPov?.heading;
@@ -137,7 +138,7 @@ export function GamepadController() {
     }
 
     const etimeResponse = await window.api.invoke(
-      "write-etime",
+      channels.WRITE_ETIME,
       dataDirPaths.participantRunDataDirPath,
       `trial_${currentTrialNumber}`,
     );
@@ -152,7 +153,7 @@ export function GamepadController() {
   const captureStreetViewScene = async () => {
     stopStreetViewChange();
     const etimeResponse = await window.api.invoke(
-      "write-etime",
+      channels.WRITE_ETIME,
       dataDirPaths.participantRunDataDirPath,
       "capture",
     );
@@ -178,7 +179,7 @@ export function GamepadController() {
       .toDataURL("image/png", 1.0)
       .substring("data:image/png;base64,".length);
     const imageStoreResponse = await window.api.invoke(
-      "street:store-capture",
+      channels.STREET.STORE_CAPTURE,
       base64EncodedImage,
       dataDirPaths.runCaptureDirPath,
       `trial_${currentTrialNumber}`,

@@ -6,7 +6,8 @@
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "paths": {
       "@/*": ["src/*"],
-      "styles/*": ["src/assets/styles/*"]
+      "styles/*": ["src/assets/styles/*"],
+      "@constants": ["electron/shared/constants.ts"]
     },
     "allowJs": false,
     "skipLibCheck": true,
@@ -21,6 +22,6 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"],
+  "include": ["src", "electron/shared/constants.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
