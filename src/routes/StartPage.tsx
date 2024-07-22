@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
 import { useGamepads } from "@/utils/awesome-react-gamepads";
 
+import {
+  ParticipantInput,
+  RequirementDetail,
+  RequirementIndicator,
+} from "@/components/startpage";
 import { reportAPIResponse } from "@/utils/api";
 import {
   experimentalSettingAtom,
@@ -125,42 +130,20 @@ export function StartPage() {
 
   return (
     <div className="w-1/2">
-      <div className="flex items-center mb-6">
-        <div className="w-1/3">
-          <label className="block text-white font-bold text-left mb-1 mb-0 pr-4">
-            Name
-          </label>
-        </div>
-        <div className="w-2/3">
-          <input
-            className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-yellow-500"
-            type="text"
-            placeholder="Participant Name (Initial only)"
-            name="name"
-            onChange={onChangeParticipantInput}
-            value={participantData.name}
-            disabled={!experimentalSetting}
-          />
-        </div>
-      </div>
-      <div className="flex items-center mb-6">
-        <div className="w-1/3">
-          <label className="block text-white font-bold text-left mb-1 mb-0 pr-4">
-            ID
-          </label>
-        </div>
-        <div className="w-2/3">
-          <input
-            className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-yellow-500"
-            type="text"
-            placeholder="Participant ID"
-            onChange={onChangeParticipantInput}
-            value={participantData.id}
-            name="id"
-            disabled={!experimentalSetting}
-          />
-        </div>
-      </div>
+      <ParticipantInput
+        label="Name"
+        placeholder="Participant Name (Initial only)"
+        name="name"
+        value={participantData.name}
+        onChange={onChangeParticipantInput}
+      />
+      <ParticipantInput
+        label="ID"
+        placeholder="Participant ID"
+        name="id"
+        value={participantData.id}
+        onChange={onChangeParticipantInput}
+      />
       <div className="flex flex-col">
         {!canStartExperiment && (
           <button
@@ -191,7 +174,8 @@ export function StartPage() {
         </p>
         {canStartExperiment && (
           <button
-            className="w-full bg-yellow-500 hover:bg-green-400 focus:shadow-outline focus:outline-none text-black font-bold mt-2 py-2 px-4 rounded"
+            className="w-full bg-yellow-500 hover:bg-green-400 focus:shadow-outline focus:outline-none 
+            text-black font-bold mt-2 py-2 px-4 rounded"
             type="button"
             onClick={startExperiment}
           >
@@ -200,88 +184,81 @@ export function StartPage() {
         )}
       </div>
       <hr className="my-6" />
-      <details className="open:border open:border-gray-300 open:rounded-md mb-3">
-        <summary className="bg-inherit flex justify-between w-full font-bold text-left text-white marker:text-white px-2 py-2 cursor-pointer hover:text-yellow-300">
-          <span>⚙️ Setting</span>
-          <label>
-            {settingLoadState.status === "success"
-              ? "✔️ Loaded"
-              : "❌ Unloaded"}
-          </label>
-        </summary>
-        <div className="flex items-center justify-between px-2 py-2 text-white">
-          <button
-            className="border border-gray-300 hover:text-yellow-300 focus:shadow-outline focus:outline-none py-1 px-2 rounded"
-            type="button"
-            onClick={initializeExperiment}
-          >
-            Load Settings
-          </button>
-          <p
-            className={`truncate ${
-              settingLoadState.status === "success"
-                ? "text-green-300"
-                : "text-red-300"
-            }`}
-          >
-            {settingLoadState.message}
-          </p>
-        </div>
-      </details>
-
-      <details className="open:border open:border-gray-300 open:rounded-md mb-3">
-        <summary className="bg-inherit flex justify-between w-full font-bold text-left text-white marker:text-white px-2 py-2 cursor-pointer hover:text-yellow-300">
-          <span>📎 CLIP</span>
-          <label>
-            {clipTextLoadState.status === "success" &&
-            clipImageLoadState.status === "success"
-              ? "✔️ Loaded"
-              : "❌ Unloaded"}
-          </label>
-        </summary>
-        <div className="flex flex-col px-2 py-2 text-white">
-          <div className="flex flex-row items-center justify-between">
-            <label className="py-1 px-2">
-              CLIP-<b>Text</b>
+      <RequirementDetail
+        summary={
+          <>
+            <span>⚙️ Setting</span>
+            <label>
+              {settingLoadState.status === "success"
+                ? "✔️ Loaded"
+                : "❌ Unloaded"}
             </label>
-            <p
-              className={`truncate ${
-                clipTextLoadState.status === "success"
-                  ? "text-green-300"
-                  : "text-red-300"
-              }`}
-            >
-              {clipTextLoadState.message}
-            </p>
-          </div>
-          <div className="flex flex-row items-center justify-between">
-            <label className="py-1 px-2">
-              CLIP-<b>Image</b>
-            </label>
-            <p
-              className={`truncate ${
-                clipImageLoadState.status === "success"
-                  ? "text-green-300"
-                  : "text-red-300"
-              }`}
-            >
-              {clipImageLoadState.message}
-            </p>
-          </div>
-        </div>
-      </details>
+          </>
+        }
+        detailed={
+          <RequirementIndicator
+            label={
+              <button
+                className="border border-gray-300 hover:text-yellow-300 focus:shadow-outline 
+                focus:outline-none py-1 px-2 rounded"
+                type="button"
+                onClick={initializeExperiment}
+              >
+                Load Settings
+              </button>
+            }
+            requirementState={settingLoadState}
+          />
+        }
+      />
 
-      <details className="open:border open:border-gray-300 open:rounded-md mb-3">
-        <summary className="bg-inherit flex justify-between w-full font-bold text-left text-white marker:text-white px-2 py-2 cursor-pointer hover:text-yellow-300">
-          <span>🕹️ Controller</span>
-          <label>{gamepadState ? "✔️ Connected" : "❌ Disconnected"}</label>
-        </summary>
-        <div className="flex items-center justify-between px-2 py-2 text-white">
+      <RequirementDetail
+        summary={
+          <>
+            <span>📎 CLIP</span>
+            <label>
+              {clipTextLoadState.status === "success" &&
+              clipImageLoadState.status === "success"
+                ? "✔️ Loaded"
+                : "❌ Unloaded"}
+            </label>
+          </>
+        }
+        detailed={
+          <div className="flex flex-col">
+            <RequirementIndicator
+              label={
+                <label className="py-1 px-2">
+                  CLIP-<b>Text</b>
+                </label>
+              }
+              requirementState={clipTextLoadState}
+            />
+            <RequirementIndicator
+              label={
+                <label className="py-1 px-2">
+                  CLIP-<b>Image</b>
+                </label>
+              }
+              requirementState={clipImageLoadState}
+            />
+          </div>
+        }
+      />
+
+      <RequirementDetail
+        summary={
+          <>
+            <span>🕹️ Controller</span>
+            <label>{gamepadState ? "✔️ Connected" : "❌ Disconnected"}</label>
+          </>
+        }
+        detailed={
           <p>
             After connecting the controller, please move the analogue stick.
           </p>
-        </div>
-      </details>
+        }
+      />
     </div>
   );
 }
