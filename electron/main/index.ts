@@ -27,10 +27,10 @@ import {
   // resizeImageForCLIP,
   // predictCLIPImageFeature,
   // registerParticipant,
-  storeCapturedImage,
-  storeCaptionSound,
+  // storeCapturedImage,
+  // storeCaptionSound,
   writeEtimeFile,
-  writeControllerActionFile,
+  // writeControllerActionFile,
 } from "./api";
 import {
   handleLoadSetting,
@@ -40,6 +40,9 @@ import {
   predictCLIPTextFeature,
   resizeImageForCLIP,
   predictCLIPImageFeature,
+  storeCapturedImage,
+  storeCaptionSound,
+  writeControllerActionFile,
 } from "../apis";
 import { channels } from "../shared/constants";
 
