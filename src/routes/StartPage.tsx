@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
 import { useGamepads } from "@/utils/awesome-react-gamepads";
 
 import { reportAPIResponse } from "@/utils/api";
@@ -11,53 +11,36 @@ import {
 } from "@/stores/experiment";
 import { channels } from "@constants";
 
-const gamepadStateAtom = atom(false);
-const settingLoadStateAtom = atom({
-  status: "error",
-  message: "Unloaded",
-});
-const clipTextLoadStateAtom = atom({
-  status: "error",
-  message: "Unloaded",
-});
-const clipImageLoadStateAtom = atom({
-  status: "error",
-  message: "Unloaded",
-});
-
-const participantDataAtom = atom({
-  name: "",
-  id: "",
-});
-const registrationStateAtom = atom({
-  status: "",
-  message: "",
-});
-
-const canStartExperimentAtom = atom(false);
-
 export function StartPage() {
-  const [settingLoadState, setSettingLoadState] = useAtom(settingLoadStateAtom);
-  const [clipTextLoadState, setClipTextLoadState] = useAtom(
-    clipTextLoadStateAtom,
-  );
-  const [clipImageLoadState, setClipImageLoadState] = useAtom(
-    clipImageLoadStateAtom,
-  );
-  const [gamepadState, setGamepadState] = useAtom(gamepadStateAtom);
+  const [settingLoadState, setSettingLoadState] = useState({
+    status: "error",
+    message: "Unloaded",
+  });
+  const [clipTextLoadState, setClipTextLoadState] = useState({
+    status: "error",
+    message: "Unloaded",
+  });
+  const [clipImageLoadState, setClipImageLoadState] = useState({
+    status: "error",
+    message: "Unloaded",
+  });
+  const [gamepadState, setGamepadState] = useState(false);
+
+  const [participantData, setParticipantData] = useState({
+    name: "",
+    id: "",
+  });
+  const [registrationState, setRegistrationState] = useState({
+    status: "",
+    message: "",
+  });
+  const [canStartExperiment, setCanStartExperiment] = useState(false);
+
   const [experimentalSetting, setExperimentalSetting] = useAtom(
     experimentalSettingAtom,
   );
-
-  const [participantData, setParticipantData] = useAtom(participantDataAtom);
-  const [registrationState, setRegistrationState] = useAtom(
-    registrationStateAtom,
-  );
   const [, setDataDirPaths] = useAtom(dataDirPathsAtom);
   const [, setCurrentRunInfo] = useAtom(currentRunInfoAtom);
-  const [canStartExperiment, setCanStartExperiment] = useAtom(
-    canStartExperimentAtom,
-  );
 
   const navigate = useNavigate();
 

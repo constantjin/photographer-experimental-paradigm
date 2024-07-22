@@ -1,7 +1,7 @@
 /* global google */
 
-import { useEffect, useRef } from "react";
-import { useAtomValue, useAtom, atom, useSetAtom } from "jotai";
+import { useState, useEffect, useRef } from "react";
+import { useAtomValue, useAtom, useSetAtom } from "jotai";
 
 import {
   dataDirPathsAtom,
@@ -38,13 +38,12 @@ const initialControlOptions: google.maps.StreetViewPanoramaOptions = {
   disableDefaultUI: true,
 };
 
-const streetViewInitAtom = atom(false);
-
 export function Panorama() {
+  const [, setStreetViewInit] = useState(false);
+
   const mapRef = useRef<HTMLDivElement>(null);
   const [, setStreetViewRef] = useAtom(streetViewRefAtom);
   const [, setMapDivRef] = useAtom(mapDivRefAtom);
-  const [, setStreetViewInit] = useAtom(streetViewInitAtom);
   const dataDirPaths = useAtomValue(dataDirPathsAtom);
   const currentRunInfo = useAtomValue(currentRunInfoAtom);
   const [, setCurrentTrialNumber] = useAtom(currentTrialNumberAtom);
