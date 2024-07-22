@@ -19,19 +19,6 @@ import { app, BrowserWindow, shell, ipcMain } from "electron";
 import { release } from "os";
 import { join } from "path";
 
-// import {
-// handleLoadSetting,
-// loadCLIPTextModel,
-// loadCLIPImageModel,
-// predictCLIPTextFeature,
-// resizeImageForCLIP,
-// predictCLIPImageFeature,
-// registerParticipant,
-// storeCapturedImage,
-// storeCaptionSound,
-// writeEtimeFile,
-// writeControllerActionFile,
-// } from "./api";
 import {
   handleLoadSetting,
   registerParticipant,
