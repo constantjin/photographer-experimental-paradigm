@@ -20,18 +20,19 @@ import { release } from "os";
 import { join } from "path";
 
 import {
-  handleLoadSetting,
+  // handleLoadSetting,
   loadCLIPTextModel,
   loadCLIPImageModel,
   predictCLIPTextFeature,
   resizeImageForCLIP,
   predictCLIPImageFeature,
-  registerParticipant,
+  // registerParticipant,
   storeCapturedImage,
   storeCaptionSound,
   writeEtimeFile,
   writeControllerActionFile,
 } from "./api";
+import { handleLoadSetting, registerParticipant } from "../apis";
 import { channels } from "../shared/constants";
 
 // Disable GPU Acceleration for Windows 7
