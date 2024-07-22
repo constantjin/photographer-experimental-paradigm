@@ -21,18 +21,26 @@ import { join } from "path";
 
 import {
   // handleLoadSetting,
-  loadCLIPTextModel,
-  loadCLIPImageModel,
-  predictCLIPTextFeature,
-  resizeImageForCLIP,
-  predictCLIPImageFeature,
+  // loadCLIPTextModel,
+  // loadCLIPImageModel,
+  // predictCLIPTextFeature,
+  // resizeImageForCLIP,
+  // predictCLIPImageFeature,
   // registerParticipant,
   storeCapturedImage,
   storeCaptionSound,
   writeEtimeFile,
   writeControllerActionFile,
 } from "./api";
-import { handleLoadSetting, registerParticipant } from "../apis";
+import {
+  handleLoadSetting,
+  registerParticipant,
+  loadCLIPTextModel,
+  loadCLIPImageModel,
+  predictCLIPTextFeature,
+  resizeImageForCLIP,
+  predictCLIPImageFeature,
+} from "../apis";
 import { channels } from "../shared/constants";
 
 // Disable GPU Acceleration for Windows 7
