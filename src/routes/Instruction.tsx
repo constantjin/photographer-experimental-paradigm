@@ -11,31 +11,28 @@ export function Instruction() {
   // Page-specific constants
   const instructionDurationInMs = 5000; // ms
 
-  const dataDirPaths = useAtomValue(dataDirPathsAtom);
+  const participantRunDataDirPath =
+    useAtomValue(dataDirPathsAtom).participantRunDataDirPath;
   const currentRunInfo = useAtomValue(currentRunInfoAtom);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const initInstruction = async () => {
-      const startTime = performance.now();
-      const etimeResponse = await window.api.invoke(
-        channels.WRITE_ETIME,
-        dataDirPaths.participantRunDataDirPath,
-        "instruction",
-      );
+      const [etimeResponse] = await Promise.all([
+        window.api.invoke(
+          channels.WRITE_ETIME,
+          participantRunDataDirPath,
+          "instruction",
+        ),
+        delay(instructionDurationInMs),
+      ]);
       reportAPIResponse(etimeResponse);
-      const endTime = performance.now();
-
-      const etimeDelay = endTime - startTime;
-      if (etimeDelay < instructionDurationInMs) {
-        await delay(instructionDurationInMs - etimeDelay);
-      }
       navigate("/fixation_target");
     };
 
     initInstruction();
-  }, [dataDirPaths.participantRunDataDirPath, navigate]);
+  }, [participantRunDataDirPath, navigate]);
 
   return (
     <div className="flex flex-col justify-center text-center text-white">
