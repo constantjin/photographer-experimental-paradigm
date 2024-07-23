@@ -19,15 +19,16 @@ export function Instruction() {
 
   useEffect(() => {
     const initInstruction = async () => {
-      const [etimeResponse] = await Promise.all([
-        window.api.invoke(
-          channels.WRITE_ETIME,
-          participantRunDataDirPath,
-          "instruction",
-        ),
+      await Promise.all([
+        window.api
+          .invoke(
+            channels.WRITE_ETIME,
+            participantRunDataDirPath,
+            "instruction",
+          )
+          .then((etimeResponse) => reportAPIResponse(etimeResponse)),
         delay(instructionDurationInMs),
       ]);
-      reportAPIResponse(etimeResponse);
       navigate("/fixation_target");
     };
 
