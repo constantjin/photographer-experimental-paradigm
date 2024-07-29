@@ -3,7 +3,7 @@ import { useUpdateAtom } from "jotai/utils";
 
 import { controllerActionAtom } from "@/stores/controller";
 
-export function Controller() {
+export function GamepadInterface() {
   const setControllerAction = useUpdateAtom(controllerActionAtom);
 
   useGamepads({
