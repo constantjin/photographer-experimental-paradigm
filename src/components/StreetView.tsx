@@ -1,6 +1,6 @@
 /* global google */
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useAtomValue, useAtom, useSetAtom } from "jotai";
 
 import {
@@ -8,16 +8,10 @@ import {
   currentRunInfoAtom,
   currentTrialNumberAtom,
 } from "@/stores/experiment";
-import {
-  streetViewRefAtom,
-  mapDivRefAtom,
-  // capturedStateAtom,
-} from "@/stores/streetview";
+import { streetViewRefAtom, mapDivRefAtom } from "@/stores/streetview";
 import { controllerEnabledAtom } from "@/stores/controller";
 import {
-  captureTimerEnabledAtom,
   captureIntervalEnableAtom,
-  enableControllerActionAtom,
   capturePageLoadAtom,
 } from "@/stores/capture";
 
@@ -39,25 +33,22 @@ const initialControlOptions: google.maps.StreetViewPanoramaOptions = {
 };
 
 export function StreetView() {
-  const [, setStreetViewInit] = useState(false);
-
-  const mapRef = useRef<HTMLDivElement>(null);
-  const [, setStreetViewRef] = useAtom(streetViewRefAtom);
-  const [, setMapDivRef] = useAtom(mapDivRefAtom);
   const dataDirPaths = useAtomValue(dataDirPathsAtom);
   const currentRunInfo = useAtomValue(currentRunInfoAtom);
   const [, setCurrentTrialNumber] = useAtom(currentTrialNumberAtom);
-  // const capturedState = useAtomValue(capturedStateAtom);
-  const setControllerEnabled = useSetAtom(controllerEnabledAtom);
-  const setCaptureTimerEnabled = useSetAtom(captureTimerEnabledAtom);
-  // const capturedVisible = useAtomValue(capturedVisibleAtom);
 
-  // New
+  // Note: streetViewRefAtom -> used for updating/controlling the street view
+  // mapDivRefAtom -> used for capturing the street view via html2canvas
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [, setStreetViewRef] = useAtom(streetViewRefAtom);
+  const [, setMapDivRef] = useAtom(mapDivRefAtom);
+
+  const setControllerEnabled = useSetAtom(controllerEnabledAtom);
   const setCaptureIntervalEnable = useSetAtom(captureIntervalEnableAtom);
-  const setEnableControllerAction = useSetAtom(enableControllerActionAtom);
+
   const capturePageLoad = useAtomValue(capturePageLoadAtom);
 
-  // initialize the street view panorama.
+  // Initialize the street view panorama.
   useEffect(() => {
     const initStreetView = async () => {
       setStreetViewRef(
@@ -73,40 +64,38 @@ export function StreetView() {
       );
       mapRef.current?.focus();
       setMapDivRef(mapRef.current as HTMLDivElement);
-      setCurrentTrialNumber(1);
-      const etimeResponse = await window.api.invoke(
-        channels.WRITE_ETIME,
-        dataDirPaths.participantRunDataDirPath,
-        "trial_1",
-      );
-      reportAPIResponse(etimeResponse);
-      const actionResponse = await window.api.invoke(
-        channels.STREET.WRITE_ACTION,
-        dataDirPaths.participantRunDataDirPath,
-        "trial_1",
-      );
-      reportAPIResponse(actionResponse);
-      setStreetViewInit(true);
-      setControllerEnabled(true);
-      setCaptureTimerEnabled(true);
+      setCurrentTrialNumber(1); // Intial map load means first trial in a run
 
-      // New
+      await Promise.all([
+        window.api
+          .invoke(
+            channels.WRITE_ETIME,
+            dataDirPaths.participantRunDataDirPath,
+            "trial_1",
+          )
+          .then((etimeResponse) => reportAPIResponse(etimeResponse)),
+        window.api
+          .invoke(
+            channels.STREET.WRITE_ACTION,
+            dataDirPaths.participantRunDataDirPath,
+            "trial_1",
+          )
+          .then((actionResponse) => reportAPIResponse(actionResponse)),
+      ]);
+
+      setControllerEnabled(true);
       setCaptureIntervalEnable(true);
-      setEnableControllerAction(true);
     };
 
     initStreetView();
   }, [
     currentRunInfo?.latlng,
     dataDirPaths.participantRunDataDirPath,
-    setCaptureIntervalEnable,
-    setCaptureTimerEnabled,
-    setControllerEnabled,
     setCurrentTrialNumber,
-    setEnableControllerAction,
     setMapDivRef,
-    setStreetViewInit,
     setStreetViewRef,
+    setCaptureIntervalEnable,
+    setControllerEnabled,
   ]);
 
   return (
