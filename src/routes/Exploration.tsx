@@ -4,16 +4,14 @@ import {
   Wrapper as GoogleMapWrapper,
   Status as GoogleMapStatus,
 } from "@googlemaps/react-wrapper";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import html2canvas from "html2canvas";
 
 import { MapError } from "@/components/MapError";
 import { MapLoading } from "@/components/MapLoading";
-import { Panorama } from "@/components/Panorama";
-// import { Controller } from "@/components/Controller";
-// import { PanoramaControl } from "@/components/PanoramaControl";
-// import { Captured } from "@/components/Captured";
-import { Controller } from "@/components/Controller";
-import { PanoramaControlV2 } from "@/components/PanoramaControlV2";
+import { StreetView } from "@/components/StreetView";
+import { GamepadInterface } from "@/components/GamepadInterface";
+import { StreetViewControl } from "@/components/StreetViewControl";
 import { CapturePage } from "@/components/CapturePage";
 
 import {
@@ -29,7 +27,6 @@ import {
 import { mapDivRefAtom, streetViewRefAtom } from "@/stores/streetview";
 
 import { reportAPIResponse } from "@/utils/api";
-import html2canvas from "html2canvas";
 import { delay } from "@/utils";
 import { channels } from "@constants";
 
@@ -41,22 +38,19 @@ const renderMapComponentsByStatus = (status: GoogleMapStatus) => {
 };
 
 export function Exploration() {
+  // Note: routes/Exploration.tsx mainly handles capture actions and shows
+  // the street view map (StreetView.tsx) and event after capture (CapturePage.tsx).
+
   const googleMapsAPIKey = useAtomValue(googleMapsAPIKeyAtom);
   const dataDirPaths = useAtomValue(dataDirPathsAtom);
   const trialInfo = useAtomValue(trialInfoAtom);
-  // const capturedVisible = useAtomValue(capturedVisibleAtom);
   const captureIntervalEnable = useAtomValue(captureIntervalEnableAtom);
 
-  // New
-  const setCapturePageLoad = useSetAtom(capturePageLoadAtom);
-  const capturePageLoad = useAtomValue(capturePageLoadAtom);
+  const [capturePageLoad, setCapturePageLoad] = useAtom(capturePageLoadAtom);
 
   const captureIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // const captureIntervalInMs = 20 * 1000; // ms
   const captureIntervalInMs = trialInfo?.captureIntervalInMs ?? 20 * 1000;
 
-  // Capture
   const mapDivRef = useAtomValue(mapDivRefAtom);
   const streetViewRef = useAtomValue(streetViewRefAtom);
   const setBase64EncodedCapture = useSetAtom(base64EncodedCaptureAtom);
@@ -70,7 +64,7 @@ export function Exploration() {
     }
 
     streetViewRef?.setOptions({
-      linksControl: false,
+      linksControl: false, // Hide map controls before capture
     });
 
     await delay(50);
@@ -84,7 +78,7 @@ export function Exploration() {
       .substring("data:image/png;base64,".length);
 
     streetViewRef?.setOptions({
-      linksControl: true,
+      linksControl: true, // Show map controls before capture
     });
 
     setBase64EncodedCapture(base64EncodedImage);
@@ -98,19 +92,22 @@ export function Exploration() {
   }, []);
 
   const setCaptureInterval = useCallback(() => {
-    // resetCaptureInterval()
     if (captureIntervalRef.current) {
       return;
     }
 
+    // Automatically capture after the capture interval ("capture failed")
     captureIntervalRef.current = setInterval(async () => {
-      const etimeResponse = await window.api.invoke(
-        channels.WRITE_ETIME,
-        dataDirPaths.participantRunDataDirPath,
-        "capture_failed",
-      );
-      reportAPIResponse(etimeResponse);
-      await captureStreetViewScene();
+      await Promise.all([
+        window.api
+          .invoke(
+            channels.WRITE_ETIME,
+            dataDirPaths.participantRunDataDirPath,
+            "capture_failed",
+          )
+          .then((etimeResponse) => reportAPIResponse(etimeResponse)),
+        captureStreetViewScene(),
+      ]);
       setCapturePageLoad(true);
     }, captureIntervalInMs);
   }, [
@@ -120,6 +117,9 @@ export function Exploration() {
     setCapturePageLoad,
   ]);
 
+  // useEffect hook handles captureIntervalEnable state changes.
+  // For example, if StreetView component is initialized, it will set captureIntervalEnable.
+  // If the capture button is pressed, it will unset captureIntervalEnable.
   useEffect(() => {
     if (captureIntervalEnable) {
       console.log("[Exploration:useEffect] capture interval enabled");
@@ -130,6 +130,10 @@ export function Exploration() {
     }
   }, [captureIntervalEnable, setCaptureInterval, resetCaptureInterval]);
 
+  // StreetView: shows the street view map
+  // GamepadInterface: handles gamepad/joystick inputs
+  // StreetViewControl: update the street view with repect to the gamepad inputs
+  // CapturePage: handles post-capture event blocks
   return (
     <GoogleMapWrapper
       apiKey={googleMapsAPIKey ?? "google-maps-api-key-not-set"}
@@ -138,12 +142,9 @@ export function Exploration() {
       region="US"
       render={renderMapComponentsByStatus}
     >
-      <Panorama />
-      {/* <PanoramaControl />
-      <Controller /> */}
-      {/* {capturedVisible && <Captured />} */}
-      <Controller />
-      <PanoramaControlV2 />
+      <StreetView />
+      <GamepadInterface />
+      <StreetViewControl />
       {capturePageLoad && <CapturePage />}
     </GoogleMapWrapper>
   );
