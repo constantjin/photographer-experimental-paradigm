@@ -38,7 +38,7 @@ const initialControlOptions: google.maps.StreetViewPanoramaOptions = {
   disableDefaultUI: true,
 };
 
-export function Panorama() {
+export function StreetView() {
   const [, setStreetViewInit] = useState(false);
 
   const mapRef = useRef<HTMLDivElement>(null);

@@ -23,7 +23,7 @@ import { channels } from "@constants";
 
 import html2canvas from "html2canvas";
 
-export function PanoramaControl() {
+export function StreetViewControl() {
   const streetViewRef = useAtomValue(streetViewRefAtom);
   // const mapDivRef = useAtomValue(mapDivRefAtom);
   const dataDirPaths = useAtomValue(dataDirPathsAtom);
