@@ -10,10 +10,11 @@ import {
   azureAPIKeyAtom,
   googleTTSAPIKeyAtom,
 } from "@/stores/experiment";
+import { controllerEnabledAtom } from "@/stores/controller";
 import {
   captureIntervalEnableAtom,
   capturePageLoadAtom,
-  enableControllerActionAtom,
+  // enableControllerActionAtom,
   base64EncodedCaptureAtom,
   base64EncodedVoiceAtom,
 } from "@/stores/capture";
@@ -637,7 +638,8 @@ export function CapturePage() {
   const trialOrderStatus = useAtomValue(trialOrderStatusAtom);
   const setTrialOrderStatus = useSetAtom(trialOrderStatusAtom);
 
-  const setEnableControllerAction = useSetAtom(enableControllerActionAtom);
+  // const setEnableControllerAction = useSetAtom(enableControllerActionAtom);
+  const setControllerEnabled = useSetAtom(controllerEnabledAtom);
   const setCaptureIntervalEnable = useSetAtom(captureIntervalEnableAtom);
   const currentTrialNumber = useAtomValue(currentTrialNumberAtom);
 
@@ -649,7 +651,8 @@ export function CapturePage() {
   const initTrialSequence = () => {
     console.log("[CapturePage] loaded capture page.");
     setCaptureIntervalEnable(false);
-    setEnableControllerAction(false);
+    // setEnableControllerAction(false);
+    setControllerEnabled(false);
     setTrialOrderStatus("fixation_before_preview");
     setInitialized(true);
     // setOnCrossFixationBeforeCapture(true);
@@ -674,7 +677,8 @@ export function CapturePage() {
         console.log("[CapturePage] Run end");
       } else {
         setCaptureIntervalEnable(true);
-        setEnableControllerAction(true);
+        // setEnableControllerAction(true);
+        setControllerEnabled(true);
       }
     };
   }, []);

@@ -265,7 +265,8 @@ export function StreetViewControl() {
     // if (!controllerEnabled) {
     //   return;
     // }
-    if (enableControllerAction) {
+    if (controllerEnabled) {
+      // if (enableControllerAction) {
       logControllerAction(controllerAction);
       switch (controllerAction) {
         case "capture":
