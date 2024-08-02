@@ -6,21 +6,17 @@ import { controllerActionAtom } from "@/stores/controller";
 export function GamepadInterface() {
   const setControllerAction = useUpdateAtom(controllerActionAtom);
 
+  // Note: the Current Designs Tethyx joystick assigns the analogue stick as 'LeftStick (axis 0)'
+  // and the trigger as 'Button 0' ('A' button from the Microsoft Xbox game pad).
+  // Please visit https://hardwaretester.com/gamepad to check axis/stick names and adjust
+  // thresholds if you use a gamepad/joystick other than Tethyx.
+
   useGamepads({
     stickThreshold: 0.4,
     onGamepadAxesChange(axes) {
       const currAxesState = axes;
-      // console.log(currAxesState.axesName);
       switch (currAxesState.axesName) {
         case "LeftStickY":
-          // if (currAxesState.value === 0) {
-          //   setControllerAction("stop");
-          // } else if (currAxesState.value === -0.7) {
-          //   setControllerAction("down");
-          // } else if (currAxesState.value === 0.7) {
-          //   setControllerAction("up");
-          // }
-          // break;
           if (currAxesState.value === 0) {
             setControllerAction("stop");
           } else if (currAxesState.value < -0.5) {
@@ -31,14 +27,6 @@ export function GamepadInterface() {
           break;
 
         case "LeftStickX":
-          // if (currAxesState.value === 0) {
-          //   setControllerAction("stop");
-          // } else if (currAxesState.value === -0.7) {
-          //   setControllerAction("left");
-          // } else if (currAxesState.value === 0.4) {
-          //   setControllerAction("right");
-          // }
-          // break;
           if (currAxesState.value === 0) {
             setControllerAction("stop");
           } else if (currAxesState.value < -0.4) {
