@@ -58,7 +58,7 @@ export function Exploration() {
   const captureStreetViewScene = useCallback(async () => {
     if (!mapDivRef) {
       console.error(
-        "[PanoramaControl:captureStreetViewScene] Undefined mapDivRef.",
+        "[Exploration:captureStreetViewScene] Undefined mapDivRef.",
       );
       return;
     }
