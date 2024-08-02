@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
-// import html2canvas from "html2canvas";
+import html2canvas from "html2canvas";
 
 import { dataDirPathsAtom } from "@/stores/experiment";
 import { streetViewRefAtom, mapDivRefAtom } from "@/stores/streetview";
@@ -11,9 +11,7 @@ import {
   controllerEnabledAtom,
 } from "@/stores/controller";
 import {
-  captureTimerEnabledAtom,
   capturePageLoadAtom,
-  enableControllerActionAtom,
   base64EncodedCaptureAtom,
 } from "@/stores/capture";
 
@@ -21,34 +19,26 @@ import { delay } from "@/utils";
 import { reportAPIResponse } from "@/utils/api";
 import { channels } from "@constants";
 
-import html2canvas from "html2canvas";
-
 export function StreetViewControl() {
   const streetViewRef = useAtomValue(streetViewRefAtom);
-  // const mapDivRef = useAtomValue(mapDivRefAtom);
   const dataDirPaths = useAtomValue(dataDirPathsAtom);
-  const controllerAction = useAtomValue(controllerActionAtom);
-  const controllerEnabled = useAtomValue(controllerEnabledAtom);
-  const captureTimerEnabled = useAtomValue(captureTimerEnabledAtom);
-  // const setCapturedVisible = useSetAtom(capturedVisibleAtom);
-  // const currentTrialNumber = useAtomValue(currentTrialNumberAtom);
 
-  const setCapturePageLoad = useSetAtom(capturePageLoadAtom);
-  const enableControllerAction = useAtomValue(enableControllerActionAtom);
-
-  const actionIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  // const captureTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Capture
   const mapDivRef = useAtomValue(mapDivRefAtom);
   const setBase64EncodedCapture = useSetAtom(base64EncodedCaptureAtom);
 
-  // Component-specific constants
+  const controllerAction = useAtomValue(controllerActionAtom);
+  const controllerEnabled = useAtomValue(controllerEnabledAtom);
+
+  const setCapturePageLoad = useSetAtom(capturePageLoadAtom);
+
+  const actionIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Component-specific constants to control smoothness of viewpoint or location change
   const viewpointChangeIntervalInMs = 20; //ms
   const locationChangeIntervalInMs = 1000; // ms
-  // const captureTimeoutInMs = 20 * 1000; // ms
 
-  // Helper functions
+  // Helper functions to repeatedly call actionFunction() with an interval and stop the repetitions.
+  // We use them to simulate smooth street view control.
   const setActionInterval = useCallback(
     (actionFunction: () => void, interval: number) => {
       resetActionInterval();
@@ -67,46 +57,35 @@ export function StreetViewControl() {
     }
   };
 
-  // const setCaptureTimeout = useCallback((captureFunction: () => void, timeout: number) => {
-  //   resetCaptureTimeout();
-  //   captureTimeoutRef.current = setInterval(() => {
-  //     captureFunction();
-  //   }, timeout);
-  // }, []);
-
-  // const resetCaptureTimeout = () => {
-  //   if (captureTimeoutRef.current) {
-  //     clearInterval(captureTimeoutRef.current);
-  //     captureTimeoutRef.current = null;
-  //   }
-  // };
-
   type ControllerAction = "stop" | "up" | "down" | "left" | "right" | "capture";
-  const logControllerAction = async (action: ControllerAction) => {
-    const pov = streetViewRef?.getPov();
-    const coordinate = streetViewRef?.getPosition()?.toString();
+  const logControllerAction = useCallback(
+    async (action: ControllerAction) => {
+      const pov = streetViewRef?.getPov();
+      const coordinate = streetViewRef?.getPosition()?.toString();
 
-    if (!coordinate || !pov) {
-      return;
-    }
+      if (!coordinate || !pov) {
+        return;
+      }
 
-    const jsonActionLog = JSON.stringify({
-      action,
-      coordinate,
-      pov,
-    });
+      const jsonActionLog = JSON.stringify({
+        action,
+        coordinate,
+        pov,
+      });
 
-    const actionResponse = await window.api.invoke(
-      channels.STREET.WRITE_ACTION,
-      dataDirPaths.participantRunDataDirPath,
-      jsonActionLog,
-    );
-    if (actionResponse.status === "error") {
-      reportAPIResponse(actionResponse);
-    }
-  };
+      const actionResponse = await window.api.invoke(
+        channels.STREET.WRITE_ACTION,
+        dataDirPaths.participantRunDataDirPath,
+        jsonActionLog,
+      );
+      if (actionResponse.status === "error") {
+        reportAPIResponse(actionResponse);
+      }
+    },
+    [dataDirPaths.participantRunDataDirPath, streetViewRef],
+  );
 
-  // Action function - viewpoint
+  // Action function - handle viewpoint changes (left or right joystick actions)
   const viewPointChange = useCallback(
     (headingAmount: number) => {
       return () => {
@@ -123,7 +102,7 @@ export function StreetViewControl() {
     [streetViewRef],
   );
 
-  // Action function - link
+  // Action function - handle location changes (up or down joystick actions)
   const locationChange = useCallback(
     (backward = false) => {
       return () => {
@@ -153,8 +132,10 @@ export function StreetViewControl() {
 
         let nextPanoId;
         if (backward) {
+          // Move to the farthest location with respect to the current heading
           nextPanoId = mapLinks[linkLength - 1]?.pano;
         } else {
+          // Move to the closest location with respect to the current heading
           nextPanoId = mapLinks[0]?.pano;
         }
         if (nextPanoId) {
@@ -165,9 +146,13 @@ export function StreetViewControl() {
     [streetViewRef],
   );
 
-  // // Capture function
+  // Capture function
+  // Note: This function is duplicate of captureStreetViewScene in Exploration.tsx
+  // but handleCaptureAction() capture scenes by actual button press within the capture interval ('capture' event)
+  // and captureStreetViewScene() automatically captures the scene after the interval ('capture_failed' event).
+  // Maybe we need to unify these two functions in one capture function that handles both events?
   const handleCaptureAction = useCallback(async () => {
-    resetActionInterval();
+    resetActionInterval(); // Stops current movement
     const etimeResponse = await window.api.invoke(
       channels.WRITE_ETIME,
       dataDirPaths.participantRunDataDirPath,
@@ -177,7 +162,7 @@ export function StreetViewControl() {
 
     if (!mapDivRef) {
       console.error(
-        "[PanoramaControl:captureStreetViewScene] Undefined mapDivRef.",
+        "[StreetViewControl:handleCaptureAction] Undefined mapDivRef.",
       );
       return;
     }
@@ -211,62 +196,12 @@ export function StreetViewControl() {
     streetViewRef,
   ]);
 
-  // const captureStreetViewScene = useCallback((success: boolean) => {
-  //   return async () => {
-  //     resetActionInterval();
-  //     // // Show the Captured component
-  //     // setCapturedVisible(true);
-  //     const etimeResponse = await window.api.invoke(
-  //       "write-etime",
-  //       dataDirPaths.participantRunDataDirPath,
-  //       `${success ? "capture" : "capture_failed"}`
-  //     );
-  //     reportAPIResponse(etimeResponse);
-
-  //     if (!mapDivRef) {
-  //       console.error(
-  //         "[PanoramaControl:captureStreetViewScene] Undefined mapDivRef."
-  //       );
-  //       return;
-  //     }
-
-  //     streetViewRef?.setOptions({
-  //       linksControl: false,
-  //     });
-
-  //     await delay(50);
-
-  //     const capturedCanvas = await html2canvas(mapDivRef, {
-  //       useCORS: true,
-  //       backgroundColor: null,
-  //     });
-  //     const base64EncodedImage = capturedCanvas
-  //     .toDataURL("image/png", 1.0)
-  //     .substring("data:image/png;base64,".length);
-
-  //     // Show the Captured component
-  //     setCapturedVisible(true);
-  //     const imageStoreResponse = await window.api.invoke(
-  //       "street:store-capture",
-  //       base64EncodedImage,
-  //       dataDirPaths.runCaptureDirPath,
-  //       `trial_${currentTrialNumber}`
-  //     );
-  //     reportAPIResponse(imageStoreResponse);
-
-  //     streetViewRef?.setOptions({
-  //       linksControl: true,
-  //     });
-  //   };
-  // }, [currentTrialNumber, dataDirPaths.participantRunDataDirPath, dataDirPaths.runCaptureDirPath, mapDivRef, setCapturedVisible, streetViewRef]);
-
-  // Register action commands
+  // Register action commands by joystick action
+  // Note: headingAmount values (0.8 or -0.8) in the viewPointChange() function are heuristic values.
+  // You can freely change these values or viewpoint/locationChangeIntervalInMs constants
+  // if you think the transition is too slow or too fast.
   useEffect(() => {
-    // if (!controllerEnabled) {
-    //   return;
-    // }
     if (controllerEnabled) {
-      // if (enableControllerAction) {
       logControllerAction(controllerAction);
       switch (controllerAction) {
         case "capture":
@@ -295,22 +230,10 @@ export function StreetViewControl() {
     locationChange,
     setActionInterval,
     viewPointChange,
-    captureTimerEnabled,
-    enableControllerAction,
     setCapturePageLoad,
     handleCaptureAction,
+    logControllerAction,
   ]);
-
-  // // Register capture timer
-  // useEffect(() => {
-  //   if (captureTimerEnabled) {
-  //     console.log("capture interval was set.");
-  //     setCaptureTimeout(captureStreetViewScene(false), captureTimeoutInMs);
-  //   } else {
-  //     console.log("capture interval was reset.");
-  //     resetCaptureTimeout();
-  //   }
-  // }, [captureStreetViewScene, captureTimeoutInMs, captureTimerEnabled, setCaptureTimeout]);
 
   return <div></div>;
 }
