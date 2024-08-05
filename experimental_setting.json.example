@@ -45,7 +45,7 @@
             "captionTarget": "A person on the bicycle is waiting for the traffic light."
         }
     ],
-    "azureAPIUrl": "",
+    "azureAPIUrl": "https://[your-project-name].cognitiveservices.azure.com/vision/v3.1/analyze?visualFeatures=Description",
     "azureAPIKey": "",
     "googleTTSAPIKey": "",
     "trialInfo": {
