@@ -41,3 +41,15 @@ export const dataDirPathsAtom = atom({
 
 export const currentRunInfoAtom = atom<RunInfo | undefined>(undefined);
 export const currentTrialNumberAtom = atom(0);
+
+export type TrialEvent =
+  | "fixation_before_preview"
+  | "capture_preview"
+  | "fixation_before_multimodal"
+  | "multimodal"
+  | "fixation_before_reward"
+  | "reward"
+  | "fixation_after_reward";
+export const trialEventStatusAtom = atom<TrialEvent | undefined>(undefined);
+
+export const predictedCaptionTextAtom = atom({ text: "", confidence: 0.0 });
