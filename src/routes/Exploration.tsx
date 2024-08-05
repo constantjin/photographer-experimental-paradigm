@@ -18,6 +18,7 @@ import {
   googleMapsAPIKeyAtom,
   dataDirPathsAtom,
   trialInfoAtom,
+  currentTrialNumberAtom,
 } from "@/stores/experiment";
 import {
   captureIntervalEnableAtom,
@@ -45,8 +46,12 @@ export function Exploration() {
   const dataDirPaths = useAtomValue(dataDirPathsAtom);
   const trialInfo = useAtomValue(trialInfoAtom);
   const captureIntervalEnable = useAtomValue(captureIntervalEnableAtom);
+  const [currentTrialNumber, setCurrentTrialNumber] = useAtom(
+    currentTrialNumberAtom,
+  );
 
   const [capturePageLoad, setCapturePageLoad] = useAtom(capturePageLoadAtom);
+  const prevCapturePageLoad = useRef<boolean>(false);
 
   const captureIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const captureIntervalInMs = trialInfo?.captureIntervalInMs ?? 20 * 1000;
@@ -129,6 +134,48 @@ export function Exploration() {
       resetCaptureInterval();
     }
   }, [captureIntervalEnable, setCaptureInterval, resetCaptureInterval]);
+
+  // This useEffect hook watches capturePageLoad and update currentTrialNumber
+  // at the end of each trial.
+  useEffect(() => {
+    const updateCurrentTrialNumber = async () => {
+      const newTrialNumber = currentTrialNumber + 1;
+      setCurrentTrialNumber(newTrialNumber);
+      await Promise.all([
+        window.api
+          .invoke(
+            channels.WRITE_ETIME,
+            dataDirPaths.participantRunDataDirPath,
+            `trial_${newTrialNumber}`,
+          )
+          .then((etimeResponse) => reportAPIResponse(etimeResponse)),
+        window.api
+          .invoke(
+            channels.STREET.WRITE_ACTION,
+            dataDirPaths.participantRunDataDirPath,
+            `trial_${newTrialNumber}`,
+          )
+          .then((actionResponse) => reportAPIResponse(actionResponse)),
+      ]);
+    };
+
+    // capturePageLoad: true -> false (end of each trial)
+    if (prevCapturePageLoad.current === true && capturePageLoad === false) {
+      console.log("[Exploration:useEffect] Current trial end");
+
+      // currentTrialNumber update logics should run after the CapturePage is unloaded.
+      // If not, they will re-render CapturePage since it depends on currentTrialNumer.
+      updateCurrentTrialNumber();
+    }
+
+    // Store previous capturePageLoad state
+    prevCapturePageLoad.current = capturePageLoad;
+  }, [
+    capturePageLoad,
+    currentTrialNumber,
+    dataDirPaths.participantRunDataDirPath,
+    setCurrentTrialNumber,
+  ]);
 
   // StreetView: shows the street view map
   // GamepadInterface: handles gamepad/joystick inputs
