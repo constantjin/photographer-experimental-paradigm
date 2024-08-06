@@ -7,7 +7,7 @@ export function GamepadInterface() {
   const setControllerAction = useUpdateAtom(controllerActionAtom);
 
   // Note: the Current Designs Tethyx joystick assigns the analogue stick as 'LeftStick (axis 0)'
-  // and the trigger as 'Button 0' ('A' button from the Microsoft Xbox game pad).
+  // and the thumb button as 'Button 0' ('A' button from the Microsoft Xbox game pad).
   // Please visit https://hardwaretester.com/gamepad to check axis/stick names and adjust
   // thresholds if you use a gamepad/joystick other than Tethyx.
 
