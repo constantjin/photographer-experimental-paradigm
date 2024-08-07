@@ -1,5 +1,8 @@
 {
     "googleMapsAPIKey": "",
+    "azureAPIUrl": "https://[your-project-name].cognitiveservices.azure.com/vision/v3.1/analyze?visualFeatures=Description",
+    "azureAPIKey": "",
+    "googleTTSAPIKey": "",
     "clipTextModelPath": "./models/clip-text-vit-32-float32-int32.onnx",
     "clipImageModelPath": "./models/clip-image-vit-32-float32.onnx",
     "experimentalDataStorePath": "./data",
@@ -45,18 +48,15 @@
             "captionTarget": "A person on the bicycle is waiting for the traffic light."
         }
     ],
-    "azureAPIUrl": "https://[your-project-name].cognitiveservices.azure.com/vision/v3.1/analyze?visualFeatures=Description",
-    "azureAPIKey": "",
-    "googleTTSAPIKey": "",
     "trialInfo": {
-        "captureIntervalInMs": 40000,
         "totalNumberOfTrials": 8,
+        "captureIntervalInMs": 40000,
         "fixationDurationInMs": 5000,
         "fixationJitterRatio": 0.2,
         "capturePreviewDurationInMs": 2000,
         "multimodalDurationInMs": 3000,
-        "speakingRate": 1.2,
         "propabilityOfCaptionText": 0.5,
+        "speakingRate": 1.2,
         "rewardDurationInMs": 2000,
         "minSimilarityThreshold": 0.18,
         "maxSimilarityThreshold": 0.28
