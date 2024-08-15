@@ -105,3 +105,21 @@ Guides and explanations for keys in `experimental_setting.json.example` file. No
 | trialInfo.rewardDurationInMs | `number` | Duration of the Feedback (Reward) block. Default 2 s (2000 ms). | 2000 |
 | trialInfo.minSimilarityThreshold | `number` | Minimal cosine similarity score used in feedback score computation. All cosine similarity scores less than this (default: 0.18) are presented as 0 feedback scores. | 0.18 |
 | trialInfo.maxSimilarityThreshold | `number` | Maximum consine similarity score for feedback score computation (default: 0.28). Presented feedback scores are normalized as `(cosineSimilarityScore - minSimilarityThreshold) / (maxSimilarityThreshold - minSimilarityThreshold) * 100`. | 0.28 |
+
+## Stored data
+You can find participant data directories in the path specified as `experimentalDataStorePath` in `experimental_setting.json`. Details for each directory or file are below:
+
+| Directory | File | Details |
+| --------- | ---- | ------- |
+| (root) | `runinfo.txt` | Information about run numbers and city names for task runs. Each run information is stored as `[run number]_[city_name]#[index for runInfo array]` in a row. |
+| `[run_number]_[city_name]` | `log_etime.txt` | An etime ('event time') file for a run. Each row has `[YYYY-MM-DD HH:mm:ss.SSS]\t[event_name]` form. For 'feedback' event rows, `trial_reward:` represents a raw cosine similarity score, and `percent:` represents a normalized feedback score. |
+| | `controller_action.txt` | Joystick/gamepad log for a run. Controller events are stored as `{ "action": string; "coordinate": string; "fov": { "heading": number; "pitch": number; "zoom": number } }`. Note that only distinct controller actions are logged (i.e., continuous actions except for initiation are ignored). |
+| `capture` | `trial_[trial_number].jpg` | Captured photograph for each trial. |
+| `caption_audio` | `trial_[trial_number].mp3` | TTS-converted voice file for a caption sentence of each trial. Note that the actual caption sentences are stored in the `log_etime.txt`. |
+| `feature_vector` | `text_feature.json` | CLIP-Text encoder feature vector of the target caption text specificed in `trialInfo.captionText`. |
+| | `image_feature_trial_[trial_number].json` | CLIP-Image encoder feature vector for each captured photograph. They have the same dimension to the `text_feature.json`. |
+
+## Acknowledgements
+- [electron-vite/electron-vite-react](https://github.com/electron-vite/electron-vite-react): Template for this repository (Original [README.md](acknowledgements/electron-vite-react/README.md)).
+- [ChristopherHButler/awesome-react-gamepad](https://github.com/ChristopherHButler/awesome-react-gamepads): Originally we included the package in our dependency lists. However, it depends on the incompatible React version to our codes, which resulted in peer dependency errors during `npm install`. Therefore, we had to copy their codes from their repositories and remove this package from our dependency lists. 
+- [josephrocca/openai-clip-js](https://github.com/josephrocca/openai-clip-js): Their works made possible to use CLIP in an electron environment. 
