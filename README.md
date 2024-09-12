@@ -1,6 +1,11 @@
 # Photographer Experimental Paradigm
 A novel naturalisitc real-world reinforement learning (RL) paradigm in Google street-view environments. 
 
+## References
+
+  - **Jin, S.**, Lee, J., & Lee, J. H. Historical Feedback Representations Robustly Guide Learning. Organization for Human Brain Mapping (OHBM) 2024. Seoul, Korea.
+  - **Jin, S.**, Lee, J., & Lee, J. H. How to Be a Good Photographer: Multi-modal Learning In a Real-life Environment. OHBM 2023. Montreal, Canada. **[Oral Presentation]**
+
 ## Experimental paradigm
 ![Photographer Experimental Paradigm](images/experimental_paradigm.png)
 
